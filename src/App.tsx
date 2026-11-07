@@ -51,17 +51,6 @@ const allItems = contributions.flatMap((c) => c.items);
 const landed = allItems.filter((i) => i.status !== 'in review').length;
 const inReview = allItems.length - landed;
 
-/** The crash-test target: the quadrant marker painted on test vehicles and dummies. */
-function Mark({ className = 'h-7 w-7' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 32 32" className={className} aria-hidden="true">
-      <circle cx="16" cy="16" r="15" className="fill-signal" />
-      <path d="M16 1a15 15 0 0 1 15 15H16z M16 31A15 15 0 0 1 1 16h15z" className="fill-code" />
-      <circle cx="16" cy="16" r="15" fill="none" className="stroke-signal" strokeWidth="2" />
-    </svg>
-  );
-}
-
 /** Section heading: the heading carries itself, with an optional line of context beside it. */
 function SectionTitle({ title, aside }: { title: string; aside?: string }) {
   return (
@@ -245,9 +234,8 @@ function TestSheet() {
           })}
         </ol>
       </div>
-      <div className="flex items-center justify-between gap-3 border-t border-rule px-5 py-3">
+      <div className="border-t border-rule px-5 py-3">
         <span className="verdict display tabular text-2xl uppercase text-pass" style={{ animationDelay: `${start + TEST_RUN.length * step}s` }}>{TEST_TOTAL}</span>
-        <Mark className="h-8 w-8" />
       </div>
     </figure>
   );
@@ -261,9 +249,9 @@ export default function App() {
       <div className="lane" aria-hidden="true" />
       <header className="sticky top-0 z-50 border-b border-rule bg-paper">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-          <a href="#about" className="flex shrink-0 items-center gap-2.5 font-bold">
-            <Mark />
-            <span className="display hidden text-lg uppercase sm:inline">{profile.name}</span>
+          <a href="#about" aria-label={`${profile.name}, home`} className="display shrink-0 text-xl uppercase">
+            <span className="text-signal">{profile.name[0]}</span>
+            <span className="hidden sm:inline">{profile.name.slice(1)}</span>
           </a>
           <nav aria-label="Sections" className="flex gap-0.5 overflow-x-auto text-[15px]">
             {NAV.map((item) => (
