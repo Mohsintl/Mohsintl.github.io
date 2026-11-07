@@ -1,8 +1,5 @@
-import { useState, useEffect } from 'react';
-import { ChevronDown, ChevronUp, Copy, Check, Play, Plus } from 'lucide-react';
-import { SubmitTestScript } from './SubmitTestScript';
-import { siteConfig } from '../config';
-import { getApprovedContent } from '../utils/api';
+import { useState } from 'react';
+import { ChevronDown, ChevronUp, Copy, Check, Play } from 'lucide-react';
 
 interface TestScriptsProps {
   searchQuery: string;
@@ -422,31 +419,7 @@ if __name__ == '__main__':
 export function TestScripts({ searchQuery }: TestScriptsProps) {
   const [expandedScript, setExpandedScript] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [showSubmitForm, setShowSubmitForm] = useState(false);
-  const [allScripts, setAllScripts] = useState(testScripts);
-
-  // Load approved test scripts and refetch on admin updates
-  useEffect(() => {
-    const loadApproved = async () => {
-      try {
-        const approved = await getApprovedContent('testscript');
-        const approvedItems = (approved.items || []).map((item: any, index: number) => ({
-          ...item,
-          id: item.id || `approved-testscript-${index}-${Date.now()}`
-        }));
-        setAllScripts([...testScripts, ...approvedItems]);
-      } catch (err) {
-        console.error('Failed to load approved test scripts:', err);
-      }
-    };
-
-    loadApproved();
-    const onContentUpdated = () => loadApproved();
-    window.addEventListener('content-updated', onContentUpdated);
-    return () => window.removeEventListener('content-updated', onContentUpdated);
-  }, []);
-
-  const filteredScripts = allScripts.filter(script =>
+  const filteredScripts = testScripts.filter(script =>
     searchQuery === '' ||
     script.app.toLowerCase().includes(searchQuery.toLowerCase()) ||
     script.framework.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -461,29 +434,11 @@ export function TestScripts({ searchQuery }: TestScriptsProps) {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="max-w-6xl mx-auto px-4 py-10">
       <div className="mb-8">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-slate-900">Test Scripts</h2>
-          <button
-            onClick={() => setShowSubmitForm(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            <Plus className="w-5 h-5" />
-            Submit Script
-          </button>
-        </div>
+        <h3 className="text-2xl font-bold text-slate-900 mb-2">Test Scripts</h3>
         <p className="text-slate-600">Ready-to-use automation scripts for various frameworks and applications</p>
       </div>
-
-      {showSubmitForm && (
-        <SubmitTestScript 
-          onClose={() => setShowSubmitForm(false)}
-          onSuccess={() => {
-            setShowSubmitForm(false);
-          }}
-        />
-      )}
 
       <p className="text-slate-600 mb-6">
         {filteredScripts.length} test script{filteredScripts.length !== 1 ? 's' : ''} available

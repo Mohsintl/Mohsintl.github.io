@@ -1,109 +1,67 @@
-name: Deploy to Production
+name: Test and deploy
 
+# Tests run on every pull request. A push to main deploys to GitHub Pages
+# only after the same tests pass on the production build.
 on:
+  pull_request:
+    branches: [main]
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build-and-deploy-frontend:
+  test:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 15
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: 22
+          cache: npm
 
-      - name: Install frontend dependencies
-        run: npm ci
+      - run: npm ci
 
-      - name: Build frontend
-        run: npm run build
-        env:
-          VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
-          VITE_SUPABASE_PUBLIC_ANON_KEY: ${{ secrets.VITE_SUPABASE_PUBLIC_ANON_KEY }}
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
-          VITE_SITE_NAME: ${{ secrets.VITE_SITE_NAME }}
-          VITE_COMPANY_NAME: ${{ secrets.VITE_COMPANY_NAME }}
-          VITE_GITHUB_URL: ${{ secrets.VITE_GITHUB_URL }}
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
 
-      - name: Run frontend tests
-        run: npm test --if-present
-        continue-on-error: true
+      - name: Typecheck, build, and run the Playwright tests
+        run: npx tsc --noEmit && npm test
 
-      - name: Upload frontend artifact
+      - name: Upload the test report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
+
+      - name: Upload the site
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
-        if: github.ref == 'refs/heads/main'
         with:
-          path: './build'
+          path: build
 
-      - name: Deploy frontend to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-        if: github.ref == 'refs/heads/main'
-
-  build-and-deploy-backend:
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: test
     runs-on: ubuntu-latest
-    needs: build-and-deploy-frontend
-
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install backend dependencies
-        run: |
-          cd backend
-          npm ci
-
-      - name: Build backend
-        run: |
-          cd backend
-          npm run build
-
-      - name: Run backend tests
-        run: |
-          cd backend
-          npm test --if-present
-        continue-on-error: true
-
-      - name: Deploy backend to Railway
-        if: github.ref == 'refs/heads/main'
-        run: |
-          # Install Railway CLI
-          npm install -g @railway/cli
-
-          # Login and deploy (requires RAILWAY_TOKEN secret)
-          cd backend
-          railway login --token ${{ secrets.RAILWAY_TOKEN }}
-          railway link ${{ secrets.RAILWAY_PROJECT_ID }}
-          railway up --detach
-
-      # Alternative: Deploy to Vercel
-      # - name: Deploy backend to Vercel
-      #   if: github.ref == 'refs/heads/main'
-      #   run: |
-      #     cd backend
-      #     npm i -g vercel
-      #     vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
-
-      # Alternative: Deploy to Render
-      # - name: Deploy backend to Render
-      #   if: github.ref == 'refs/heads/main'
-      #   run: |
-      #     curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+      - id: deployment
+        uses: actions/deploy-pages@v4
