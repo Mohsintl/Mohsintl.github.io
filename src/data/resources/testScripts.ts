@@ -1,11 +1,15 @@
-import { useState } from 'react';
-import { ChevronDown, ChevronUp, Copy, Check, Play } from 'lucide-react';
+/** Ready-to-adapt automation scripts. */
+export type TestScript = {
+  id: string;
+  app: string;
+  framework: string;
+  title: string;
+  description: string;
+  language: string;
+  code: string;
+};
 
-interface TestScriptsProps {
-  searchQuery: string;
-}
-
-const testScripts = [
+export const testScripts: TestScript[] = [
   {
     id: 'google-search-selenium',
     app: 'Google Search',
@@ -415,119 +419,3 @@ if __name__ == '__main__':
     unittest.main()`
   }
 ];
-
-export function TestScripts({ searchQuery }: TestScriptsProps) {
-  const [expandedScript, setExpandedScript] = useState<string | null>(null);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
-  const filteredScripts = testScripts.filter(script =>
-    searchQuery === '' ||
-    script.app.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    script.framework.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    script.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    script.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const copyToClipboard = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
-  };
-
-  return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      <div className="mb-8">
-        <h3 className="text-2xl font-bold text-slate-900 mb-2">Test Scripts</h3>
-        <p className="text-slate-600">Ready-to-use automation scripts for various frameworks and applications</p>
-      </div>
-
-      <p className="text-slate-600 mb-6">
-        {filteredScripts.length} test script{filteredScripts.length !== 1 ? 's' : ''} available
-      </p>
-
-      <div className="space-y-4">
-        {filteredScripts.map(script => (
-          <div key={script.id} className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
-            <button
-              onClick={() => setExpandedScript(expandedScript === script.id ? null : script.id)}
-              className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors"
-            >
-              <div className="flex items-center gap-4">
-                <div className="bg-gradient-to-br from-green-500 to-emerald-600 p-2 rounded-lg">
-                  <Play className="w-5 h-5 text-white" />
-                </div>
-                <div className="text-left">
-                  <h3 className="text-slate-900">{script.title}</h3>
-                  <p className="text-slate-600 text-sm">{script.description}</p>
-                  <div className="flex gap-2 mt-2">
-                    <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">
-                      {script.app}
-                    </span>
-                    <span className="inline-block px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">
-                      {script.framework}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                {expandedScript === script.id && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      copyToClipboard(script.code, script.id);
-                    }}
-                    className="flex items-center gap-2 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm"
-                  >
-                    {copiedId === script.id ? (
-                      <>
-                        <Check className="w-4 h-4" />
-                        Copied!
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-4 h-4" />
-                        Copy
-                      </>
-                    )}
-                  </button>
-                )}
-                {expandedScript === script.id ? (
-                  <ChevronUp className="w-5 h-5 text-slate-400" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-slate-400" />
-                )}
-              </div>
-            </button>
-
-            {expandedScript === script.id && (
-              <div className="px-6 pb-6">
-                <div className="bg-slate-900 rounded-lg p-4 overflow-x-auto">
-                  <pre className="text-sm text-slate-100 whitespace-pre">
-                    <code>{script.code}</code>
-                  </pre>
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {filteredScripts.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-slate-500">No test scripts found. Try adjusting your search.</p>
-        </div>
-      )}
-
-      <div className="mt-8 p-6 bg-green-50 border border-green-200 rounded-xl">
-        <div className="flex items-start gap-3">
-          <Play className="w-5 h-5 text-green-600 mt-0.5" />
-          <div>
-            <h3 className="text-green-900 mb-2">Run These Scripts</h3>
-            <p className="text-green-700 text-sm">
-              Make sure to update configuration values like URLs, credentials, and element locators to match your environment before running these scripts.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}

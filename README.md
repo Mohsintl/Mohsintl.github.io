@@ -22,10 +22,12 @@ The first `npm test` needs a browser: `npx playwright install chromium`.
 | What | Where |
 | :--- | :--- |
 | Name, role, about, projects, contributions, skills | `src/data/profile.ts` |
-| Cheat sheets | `src/data/cheatSheets.tsx` |
-| Templates and boilerplates | `src/components/TemplatesAndBoilerplates.tsx` |
-| Test cases | `src/components/TestCases.tsx` |
-| Test scripts | `src/components/TestScripts.tsx` |
+| Cheat sheets | `src/data/resources/cheatSheets.tsx` |
+| Templates and boilerplates | `src/data/resources/templates.tsx` |
+| Test cases | `src/data/resources/testCases.ts` |
+| Test scripts | `src/data/resources/testScripts.ts` |
+
+The resources live on their own page, `#/resources`, with a link per tab (`#/resources/templates`, `#/resources/testcases`, `#/resources/testscripts`).
 
 ## Tests
 
@@ -35,7 +37,9 @@ The first `npm test` needs a browser: `npx playwright install chromium`.
 - each nav link reaches its section, and the page never scrolls sideways
 - the hero heading, tagline, and terminal stay inside the viewport on a phone
 - external links open in a new tab with `rel="noopener"`
-- resource tabs switch, search narrows the cheat sheets, and the category filter works
+- the resources page opens from the nav, each tab has its own link, and back to profile returns home
+- search and the category filter narrow the cheat sheets; cheat sheets and scripts expand to their code
+- no resource links to a repository that does not exist
 - the page loads with no console errors
 
 ## Deploy
