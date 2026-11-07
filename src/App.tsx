@@ -21,6 +21,7 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import { contributions, profile, projects, skills } from './data/profile';
+import { notes, type Note } from './data/notes';
 import { CheatSheets } from './components/resources/CheatSheets';
 import { Templates } from './components/resources/Templates';
 import { TestCases } from './components/resources/TestCases';
@@ -30,6 +31,7 @@ const NAV = [
   { href: '#about', label: 'About' },
   { href: '#projects', label: 'Projects' },
   { href: '#open-source', label: 'Open source' },
+  { href: '#notes', label: 'Notes' },
   { href: '#skills', label: 'Skills' },
   { href: '#/resources', label: 'QA resources' },
 ];
@@ -78,10 +80,13 @@ function SectionTitle({ kicker, title }: { kicker: string; title: string }) {
 }
 
 /** Root component: the whole site is one scrolling page. */
-type Route = { page: 'home' } | { page: 'resources'; tab: ResourceTab };
+type Route = { page: 'home' } | { page: 'resources'; tab: ResourceTab } | { page: 'note'; note: Note };
 
 /** Reads the route from the URL hash: `#/resources[/tab]` is the resources page, anything else is home. */
 function readRoute(): Route {
+  const noteMatch = window.location.hash.match(/^#\/notes\/([a-z0-9-]+)/);
+  const note = noteMatch && notes.find((n) => n.slug === noteMatch[1]);
+  if (note) return { page: 'note', note };
   const m = window.location.hash.match(/^#\/resources(?:\/([a-z]+))?/);
   if (!m) return { page: 'home' };
   const tab = RESOURCE_TABS.find((t) => t.id === m[1])?.id ?? 'cheatsheets';
@@ -97,14 +102,58 @@ function useRoute(): Route {
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
   useEffect(() => {
-    if (route.page === 'resources') {
+    if (route.page !== 'home') {
       window.scrollTo({ top: 0 });
       return;
     }
     const id = window.location.hash.slice(1);
     if (id) document.getElementById(id)?.scrollIntoView();
-  }, [route.page]);
+  }, [route.page, route.page === 'note' ? route.note.slug : '']);
   return route;
+}
+
+/** One field note on its own page. */
+function NotePage({ note }: { note: Note }) {
+  return (
+    <main className="relative">
+      <div className="bg-grid pointer-events-none absolute inset-x-0 top-0 h-80" />
+      <article className="relative mx-auto max-w-3xl px-4 pb-24 pt-12">
+        <a href="#notes" className="inline-flex items-center gap-1.5 font-mono text-xs text-slate-500 hover:text-white">
+          <ArrowLeft className="h-3.5 w-3.5" /> all notes
+        </a>
+        <p className="mt-8 font-mono text-sm text-emerald-400">// {note.date}</p>
+        <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-5xl">{note.title}</h1>
+        <p className="mt-4 text-lg text-slate-400">{note.summary}</p>
+        <div className="mt-5 flex flex-wrap gap-2">
+          {note.tags.map((t) => <span key={t} className="rounded-full border border-indigo-400/20 bg-indigo-500/10 px-2.5 py-0.5 font-mono text-xs text-indigo-200">{t}</span>)}
+        </div>
+        <div className="mt-10 space-y-5 text-[17px] leading-8 text-slate-300">
+          {note.body.map((block, i) => {
+            if (block.type === 'h') return <h2 key={i} className="pt-6 text-2xl font-bold text-white">{block.text}</h2>;
+            if (block.type === 'code') return <pre key={i} className="overflow-x-auto rounded-xl border border-white/10 bg-slate-900 p-4 font-mono text-[13px] leading-6 text-slate-200"><code>{block.code}</code></pre>;
+            if (block.type === 'list') return (
+              <ul key={i} className="space-y-2">
+                {block.items.map((item) => <li key={item} className="flex gap-3"><CheckCircle2 className="mt-1.5 h-4 w-4 shrink-0 text-emerald-400" /><span>{item}</span></li>)}
+              </ul>
+            );
+            return <p key={i}>{block.text}</p>;
+          })}
+        </div>
+        <div className="mt-12 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+          <p className="font-mono text-xs uppercase tracking-wide text-slate-500">Links</p>
+          <ul className="mt-3 space-y-2">
+            {note.links.map((l) => (
+              <li key={l.url}>
+                <a href={l.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-emerald-300 underline-offset-4 hover:underline">
+                  {l.label} <ArrowUpRight className="h-3.5 w-3.5" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </article>
+    </main>
+  );
 }
 
 /** The resources library: its own page, one tab per resource type. */
@@ -193,6 +242,8 @@ export default function App() {
 
       {route.page === 'resources' ? (
         <ResourcesPage tab={route.tab} />
+      ) : route.page === 'note' ? (
+        <NotePage note={route.note} />
       ) : (
       <main>
         {/* Hero */}
@@ -248,7 +299,7 @@ export default function App() {
                     </p>
                   ))}
                   <p className="term-line mt-2 text-emerald-300" style={{ animationDelay: `${0.6 + TEST_RUN.length * 0.35 + 0.2}s` }}>
-                    32 passed <span className="text-slate-500">· desktop + mobile</span>
+                    40 passed <span className="text-slate-500">· desktop + mobile</span>
                     <span className="cursor ml-1 inline-block h-4 w-2 translate-y-0.5 bg-emerald-300" />
                   </p>
                 </div>
@@ -341,6 +392,23 @@ export default function App() {
               </li>
             ))}
           </ol>
+        </section>
+
+        {/* Notes */}
+        <section id="notes" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-20">
+          <SectionTitle kicker="what I learned doing it" title="Notes" />
+          <div className="grid gap-6 md:grid-cols-3">
+            {notes.map((n) => (
+              <a key={n.slug} href={`#/notes/${n.slug}`} className="group flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-6 transition hover:-translate-y-1 hover:border-emerald-400/40">
+                <span className="font-mono text-xs text-slate-500">{n.date}</span>
+                <h3 className="mt-3 text-lg font-semibold leading-snug text-white">{n.title}</h3>
+                <p className="mt-2 flex-1 text-sm text-slate-400">{n.summary}</p>
+                <span className="mt-5 inline-flex items-center gap-1 font-mono text-xs text-slate-500 group-hover:text-emerald-300">
+                  read <ArrowUpRight className="h-3.5 w-3.5" />
+                </span>
+              </a>
+            ))}
+          </div>
         </section>
 
         {/* Skills */}

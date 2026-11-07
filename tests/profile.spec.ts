@@ -27,7 +27,7 @@ test('lists every project and contribution from the profile data', async ({ page
 
 test('every section in the nav exists and is reachable', async ({ page, isMobile }) => {
   const nav = page.getByRole('navigation', { name: 'Sections' });
-  for (const id of ['about', 'projects', 'open-source', 'skills']) {
+  for (const id of ['about', 'projects', 'open-source', 'notes', 'skills']) {
     const link = nav.locator(`a[href="#${id}"]`);
     if (isMobile) await link.scrollIntoViewIfNeeded();
     await link.click();

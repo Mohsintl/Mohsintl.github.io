@@ -22,6 +22,7 @@ The first `npm test` needs a browser: `npx playwright install chromium`.
 | What | Where |
 | :--- | :--- |
 | Name, role, about, projects, contributions, skills | `src/data/profile.ts` |
+| Notes (write-ups, each at `#/notes/<slug>`) | `src/data/notes.ts` |
 | Cheat sheets | `src/data/resources/cheatSheets.tsx` |
 | Templates and boilerplates | `src/data/resources/templates.tsx` |
 | Test cases | `src/data/resources/testCases.ts` |
@@ -40,6 +41,7 @@ The resources live on their own page, `#/resources`, with a link per tab (`#/res
 - the resources page opens from the nav, each tab has its own link, and back to profile returns home
 - search and the category filter narrow the cheat sheets; cheat sheets and scripts expand to their code
 - no resource links to a repository that does not exist
+- every note is listed on the home page and opens on its own page with its links
 - the page loads with no console errors
 
 ## Deploy
