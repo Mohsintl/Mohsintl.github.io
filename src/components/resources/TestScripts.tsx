@@ -39,7 +39,7 @@ export function TestScripts({ query }: { query: string }) {
           );
         })}
       </div>
-      <p className="mt-8 rounded-sm bg-signal p-5 font-medium">
+      <p className="mt-8 rounded-sm bg-signal p-5 font-medium text-paper">
         Update URLs, credentials, and locators to match your environment before running these scripts.
       </p>
     </div>
