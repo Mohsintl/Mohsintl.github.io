@@ -1,45 +1,105 @@
+@import "@fontsource-variable/archivo/wdth.css";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
 @import "tailwindcss";
 
+/*
+ * Proving ground: a test track's paperwork and markings. Paper and ink,
+ * safety yellow as the one committed colour, and pass/review/fail inks that
+ * only appear where they carry a status.
+ */
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-paper: #f4f5f1;
+  --color-sheet: #ffffff;
+  --color-ink: #16150f;
+  --color-ink-2: #4b4a42;
+  --color-ink-3: #6b6a60;
+  --color-rule: #d6d5cc;
+  --color-signal: #ffd100;
+  --color-signal-deep: #e6b800;
+  --color-pass: #0a6b37;
+  --color-review: #8a4b00;
+  --color-co: #1d4aa8;
+  --color-fail: #b3261e;
 }
 
 html {
   scroll-behavior: smooth;
-  background: #020617;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  scrollbar-color: var(--color-ink-3) var(--color-paper);
+  -webkit-text-size-adjust: 100%;
 }
 
-/* Faint grid behind the hero. */
-.bg-grid {
-  background-image:
-    linear-gradient(to right, rgb(148 163 184 / 0.07) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(148 163 184 / 0.07) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(ellipse at top, black 30%, transparent 75%);
+body {
+  background: var(--color-paper);
+  caret-color: var(--color-ink);
 }
 
-/* A terminal line that fades in after the previous one. */
-@keyframes line-in {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: none; }
-}
-.term-line {
-  opacity: 0;
-  animation: line-in 0.35s ease-out forwards;
+::selection {
+  background: var(--color-signal);
+  color: var(--color-ink);
 }
 
-@keyframes blink { 50% { opacity: 0; } }
-.cursor { animation: blink 1s step-end infinite; }
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
+:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
-.glow-float { animation: float 9s ease-in-out infinite; }
+
+a {
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 1px;
+}
+
+/* Expanded, heavy display voice: the lettering on a test vehicle's door. */
+.display {
+  font-variation-settings: "wdth" 125;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+  text-wrap: balance;
+}
+.condensed {
+  font-variation-settings: "wdth" 75;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * The one authored moment: the hero's checklist is visible from the start,
+ * and each box is ticked in turn as the run replays.
+ */
+@keyframes tick {
+  from { stroke-dashoffset: 18; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes box-fill {
+  from { background-color: transparent; }
+  to { background-color: var(--color-ink); }
+}
+@keyframes verdict {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+.check-box {
+  animation: box-fill 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.check-mark {
+  stroke-dasharray: 18;
+  animation: tick 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.verdict {
+  animation: verdict 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .term-line { opacity: 1; animation: none; }
-  .cursor, .glow-float { animation: none; }
+  .check-box, .check-mark, .verdict { animation: none; }
+  .check-box { background-color: var(--color-ink); }
 }

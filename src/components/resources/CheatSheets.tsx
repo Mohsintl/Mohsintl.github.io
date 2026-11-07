@@ -26,8 +26,8 @@ export function CheatSheets({ query }: { query: string }) {
             type="button"
             onClick={() => setCategory(c.id)}
             aria-pressed={category === c.id}
-            className={`rounded-full px-3.5 py-1.5 text-sm transition ${
-              category === c.id ? 'bg-emerald-400 font-medium text-slate-950' : 'border border-white/10 text-slate-400 hover:border-white/25 hover:text-white'
+            className={`rounded-sm border px-3 py-1.5 text-[15px] font-medium transition-colors ${
+              category === c.id ? 'border-ink bg-ink text-signal' : 'border-ink/25 text-ink-2 hover:border-ink hover:text-ink'
             }`}
           >
             {c.label}
@@ -50,45 +50,38 @@ function SheetCard({ sheet }: { sheet: CheatSheet }) {
   const [open, setOpen] = useState(false);
   return (
     <article className={`${card} p-5 ${open ? 'md:col-span-2 lg:col-span-3' : ''}`}>
-      <div className="flex items-start gap-4">
-        <div className={`rounded-xl p-2.5 ${sheet.color}`} aria-hidden="true">{sheet.icon}</div>
-        <div className="min-w-0 flex-1">
-          <h3 className="font-semibold text-white">{sheet.title}</h3>
-          <p className="mt-1 text-sm text-slate-400">{sheet.description}</p>
-        </div>
-      </div>
+      <h3 className="text-lg font-bold">{sheet.title}</h3>
+      <p className="mt-1 text-ink-2">{sheet.description}</p>
       <div className="mt-4 flex flex-wrap gap-1.5">
-        {sheet.tags.map((t) => <Tag key={t} tone="indigo">{t}</Tag>)}
+        {sheet.tags.map((t) => <Tag key={t}>{t}</Tag>)}
       </div>
       <button
         type="button"
         onClick={() => setOpen(!open)}
         aria-expanded={open}
-        className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 py-2 text-sm text-slate-300 transition hover:border-emerald-400/40 hover:text-white"
+        className="mt-5 flex w-full items-center justify-center gap-2 rounded-sm border border-ink/30 py-2 text-[15px] font-semibold transition-colors hover:border-ink hover:bg-signal"
       >
         <ChevronDown className={`h-4 w-4 transition ${open ? 'rotate-180' : ''}`} />
         {open ? 'Hide details' : 'View cheat sheet'}
       </button>
       {open && (
-        <div className="mt-6 grid gap-6 border-t border-white/10 pt-6 lg:grid-cols-2">
+        <div className="mt-6 grid gap-8 border-t border-rule pt-6 lg:grid-cols-2">
           {sheet.sections.map((section) => (
             <section key={section.title}>
-              <h4 className="mb-3 flex items-center gap-2 text-sm font-semibold text-white">
-                <span className="h-4 w-1 rounded-full bg-emerald-400" /> {section.title}
-              </h4>
+              <h4 className="mb-3 border-b-2 border-signal-deep pb-1 font-bold">{section.title}</h4>
               <ul className="space-y-3">
                 {section.items.map((item, i) => (
-                  <li key={i} className="text-sm text-slate-400">
+                  <li key={i} className="text-[15px] text-ink-2">
                     {item.code ? (
                       <div>
                         <div className="flex items-start gap-2">
                           <div className="min-w-0 flex-1"><CodeBlock code={item.code} maxHeight={false} /></div>
                           <CopyButton text={item.code} />
                         </div>
-                        {item.description && <p className="mt-1.5 text-xs text-slate-500">{item.description}</p>}
+                        {item.description && <p className="mt-1.5 text-sm text-ink-3">{item.description}</p>}
                       </div>
                     ) : (
-                      <p className="flex gap-2"><span className="text-emerald-400">›</span>{item.description}</p>
+                      <p className="flex gap-3"><span aria-hidden="true" className="mt-[0.6em] h-1.5 w-3 shrink-0 bg-signal-deep" />{item.description}</p>
                     )}
                   </li>
                 ))}
@@ -97,10 +90,10 @@ function SheetCard({ sheet }: { sheet: CheatSheet }) {
           ))}
           {sheet.resources && sheet.resources.length > 0 && (
             <section className="lg:col-span-2">
-              <h4 className="mb-3 text-sm font-semibold text-white">Further reading</h4>
+              <h4 className="mb-3 font-bold">Further reading</h4>
               <div className="flex flex-wrap gap-2">
                 {sheet.resources.map((r) => (
-                  <a key={r.url} href={r.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-sm text-slate-300 hover:border-emerald-400/40 hover:text-emerald-300">
+                  <a key={r.url} href={r.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-sm border border-ink/25 px-3 py-1.5 text-sm font-medium hover:border-ink hover:bg-signal">
                     <ExternalLink className="h-3.5 w-3.5" /> {r.label}
                   </a>
                 ))}
