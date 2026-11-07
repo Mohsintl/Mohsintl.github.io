@@ -4,26 +4,28 @@
 @import "tailwindcss";
 
 /*
- * Proving ground: a test track's paperwork and markings. Paper and ink,
- * safety yellow as the one committed colour, and pass/review/fail inks that
- * only appear where they carry a status.
+ * Proving ground at night: a test track's markings on asphalt. Safety
+ * yellow is the one committed colour; pass/review/fail inks appear only
+ * where they carry a status.
  */
 @theme {
   --font-sans: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-  --color-paper: #f4f5f1;
-  --color-sheet: #ffffff;
-  --color-ink: #16150f;
-  --color-ink-2: #4b4a42;
-  --color-ink-3: #6b6a60;
-  --color-rule: #d6d5cc;
+  /* Night run on the test track: asphalt ground, lit paint, yellow markings. */
+  --color-paper: #0f0f0c;
+  --color-sheet: #1a1a15;
+  --color-code: #070706;
+  --color-ink: #f1f0e8;
+  --color-ink-2: #bdbcb1;
+  --color-ink-3: #8f8e83;
+  --color-rule: #2f2e28;
   --color-signal: #ffd100;
-  --color-signal-deep: #e6b800;
-  --color-pass: #0a6b37;
-  --color-review: #8a4b00;
-  --color-co: #1d4aa8;
-  --color-fail: #b3261e;
+  --color-signal-deep: #ffd100;
+  --color-pass: #63d68f;
+  --color-review: #f2a94e;
+  --color-co: #86acff;
+  --color-fail: #ff8077;
 }
 
 html {
@@ -41,11 +43,11 @@ body {
 
 ::selection {
   background: var(--color-signal);
-  color: var(--color-ink);
+  color: var(--color-paper);
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-ink);
+  outline: 2px solid var(--color-signal);
   outline-offset: 3px;
   border-radius: 2px;
 }
@@ -81,7 +83,7 @@ a {
 }
 @keyframes box-fill {
   from { background-color: transparent; }
-  to { background-color: var(--color-ink); }
+  to { background-color: var(--color-signal); }
 }
 @keyframes verdict {
   from { clip-path: inset(0 100% 0 0); }
@@ -101,5 +103,62 @@ a {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .check-box, .check-mark, .verdict { animation: none; }
-  .check-box { background-color: var(--color-ink); }
+  .check-box { background-color: var(--color-signal); }
+}
+
+/*
+ * Scroll motion, driven by the scroll position itself (no script). Where the
+ * browser lacks scroll timelines, or the visitor asks for less motion,
+ * everything simply sits in its final place.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* The lane marking: a yellow line across the top that fills as you read. */
+    .lane {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 60;
+      height: 3px;
+      background: var(--color-signal);
+      transform-origin: left;
+      animation: lane linear both;
+      animation-timeline: scroll(root);
+    }
+    @keyframes lane { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+    /* The hero leaves at two speeds: the name drifts, the test sheet pulls away. */
+    .hero-name, .hero-sheet {
+      animation: linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+    .hero-name { animation-name: drift; }
+    .hero-sheet { animation-name: pull; }
+    @keyframes drift { to { transform: translateY(-18%); opacity: 0.25; } }
+    @keyframes pull { to { transform: translateY(-40%) rotate(-2deg); opacity: 0; } }
+
+    /* Section headings are painted on like a lane marking. */
+    .wipe {
+      animation: wipe cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+    @keyframes wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+
+    /* Rows come up off the track as they enter. */
+    .rise {
+      animation: rise cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+    @keyframes rise { from { opacity: 0; transform: translateY(28px); filter: blur(4px); } }
+
+    /* The yellow band slides its tiles in from the side. */
+    .slide {
+      animation: slide cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+    @keyframes slide { from { opacity: 0; transform: translateX(-32px); } }
+  }
 }

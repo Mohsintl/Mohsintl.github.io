@@ -21,7 +21,7 @@ export function Templates({ query }: { query: string }) {
             type="button"
             onClick={() => setKind(id)}
             aria-pressed={kind === id}
-            className={`inline-flex items-center gap-2 rounded-[2px] px-4 py-1.5 text-[15px] font-semibold transition-colors ${kind === id ? 'bg-ink text-signal' : 'text-ink-2 hover:text-ink'}`}
+            className={`inline-flex items-center gap-2 rounded-[2px] px-4 py-1.5 text-[15px] font-semibold transition-colors ${kind === id ? 'bg-signal text-paper' : 'text-ink-2 hover:text-ink'}`}
           >
             <Icon className="h-4 w-4" /> {label} <span className="tabular text-sm opacity-70">{n}</span>
           </button>
@@ -67,7 +67,7 @@ export function Templates({ query }: { query: string }) {
                   </a>
                 )}
                 <div className="mt-4 flex gap-2">
-                  <button type="button" onClick={() => setOpenCode(openCode === b.id ? null : b.id)} aria-expanded={openCode === b.id} className="flex-1 rounded-sm border border-ink/30 py-1.5 text-[15px] font-semibold transition-colors hover:border-ink hover:bg-signal">
+                  <button type="button" onClick={() => setOpenCode(openCode === b.id ? null : b.id)} aria-expanded={openCode === b.id} className="flex-1 rounded-sm border border-ink/30 py-1.5 text-[15px] font-semibold transition-colors hover:border-signal hover:bg-signal hover:text-paper">
                     {openCode === b.id ? 'Hide code' : 'View code'}
                   </button>
                   <CopyButton text={b.code} />

@@ -56,8 +56,8 @@ function Mark({ className = 'h-7 w-7' }: { className?: string }) {
   return (
     <svg viewBox="0 0 32 32" className={className} aria-hidden="true">
       <circle cx="16" cy="16" r="15" className="fill-signal" />
-      <path d="M16 1a15 15 0 0 1 15 15H16z M16 31A15 15 0 0 1 1 16h15z" className="fill-ink" />
-      <circle cx="16" cy="16" r="15" fill="none" className="stroke-ink" strokeWidth="2" />
+      <path d="M16 1a15 15 0 0 1 15 15H16z M16 31A15 15 0 0 1 1 16h15z" className="fill-code" />
+      <circle cx="16" cy="16" r="15" fill="none" className="stroke-signal" strokeWidth="2" />
     </svg>
   );
 }
@@ -65,8 +65,8 @@ function Mark({ className = 'h-7 w-7' }: { className?: string }) {
 /** Section heading: the heading carries itself, with an optional line of context beside it. */
 function SectionTitle({ title, aside }: { title: string; aside?: string }) {
   return (
-    <div className="mb-10 flex flex-col gap-3 border-b-2 border-ink pb-4 sm:flex-row sm:items-end sm:justify-between">
-      <h2 className="display text-4xl uppercase sm:text-5xl">{title}</h2>
+    <div className="mb-10 flex flex-col gap-3 border-b-2 border-signal pb-4 sm:flex-row sm:items-end sm:justify-between">
+      <h2 className="wipe display text-4xl uppercase sm:text-5xl">{title}</h2>
       {aside && <p className="max-w-sm text-ink-2 sm:text-right">{aside}</p>}
     </div>
   );
@@ -117,7 +117,7 @@ function NotePage({ note }: { note: Note }) {
         <a href="#notes" className={backLink}>
           <ArrowLeft className="h-4 w-4" /> all notes
         </a>
-        <header className="mt-10 border-b-2 border-ink pb-8">
+        <header className="mt-10 border-b-2 border-signal pb-8">
           <p className="tabular text-sm text-ink-3">
             <time dateTime={note.date}>{note.date}</time> · {note.tags.join(' · ')}
           </p>
@@ -127,7 +127,7 @@ function NotePage({ note }: { note: Note }) {
         <div className="mt-10 max-w-[68ch] space-y-6 text-[18px] leading-[1.7]">
           {note.body.map((block, i) => {
             if (block.type === 'h') return <h2 key={i} className="display pt-8 text-2xl">{block.text}</h2>;
-            if (block.type === 'code') return <pre key={i} className="overflow-x-auto rounded-sm bg-ink p-5 font-mono text-[13px] leading-6 text-paper"><code>{block.code}</code></pre>;
+            if (block.type === 'code') return <pre key={i} className="overflow-x-auto rounded-sm border border-rule bg-code p-5 font-mono text-[13px] leading-6 text-ink"><code>{block.code}</code></pre>;
             if (block.type === 'list') return (
               <ul key={i} className="space-y-3">
                 {block.items.map((item) => (
@@ -141,7 +141,7 @@ function NotePage({ note }: { note: Note }) {
             return <p key={i}>{block.text}</p>;
           })}
         </div>
-        <footer className="mt-14 border-t-2 border-ink pt-6">
+        <footer className="mt-14 border-t-2 border-signal pt-6">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-2">Links</h2>
           <ul className="mt-3 space-y-2">
             {note.links.map((l) => (
@@ -175,7 +175,7 @@ function ResourcesPage({ tab }: { tab: ResourceTab }) {
           <a href={`${profile.repository}/issues/new`} target="_blank" rel="noopener noreferrer" className="font-medium text-ink underline decoration-signal-deep decoration-2 hover:decoration-ink">Open an issue</a> or a pull request.
         </p>
 
-        <div className="sticky top-[61px] z-40 -mx-4 mt-10 border-b-2 border-ink bg-paper px-4 pt-3">
+        <div className="sticky top-[61px] z-40 -mx-4 mt-10 border-b-2 border-rule bg-paper px-4 pt-3">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <nav role="tablist" aria-label="Resource type" className="-mb-0.5 flex overflow-x-auto">
               {RESOURCE_TABS.map(({ id, label }) => (
@@ -198,7 +198,7 @@ function ResourcesPage({ tab }: { tab: ResourceTab }) {
                 placeholder="Search resources"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="w-full rounded-sm border border-ink/40 bg-sheet py-2 pl-9 pr-3 text-[15px] text-ink placeholder:text-ink-3 focus:border-ink focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ink"
+                className="w-full rounded-sm border border-ink/30 bg-sheet py-2 pl-9 pr-3 text-[15px] text-ink placeholder:text-ink-3 focus:border-signal focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-signal"
               />
             </div>
           </div>
@@ -221,7 +221,7 @@ function TestSheet() {
   const step = 0.32;
   const start = 0.4;
   return (
-    <figure className="relative rounded-sm bg-sheet text-ink shadow-[0_18px_40px_-18px_rgb(22_21_15/0.45)]">
+    <figure className="hero-sheet relative rounded-sm border border-rule bg-sheet text-ink shadow-[0_24px_60px_-20px_rgb(0_0_0/0.8)]">
       <figcaption className="flex items-center justify-between gap-3 border-b border-rule px-5 py-3 text-sm">
         <span className="font-semibold">This site's own test run</span>
         <span className="text-ink-3">desktop + mobile</span>
@@ -233,10 +233,10 @@ function TestSheet() {
             const delay = `${start + i * step}s`;
             return (
               <li key={line} className="flex items-start gap-3 text-[15px] leading-snug">
-                <span className="relative mt-0.5 grid h-[18px] w-[18px] shrink-0 place-items-center rounded-[2px] border-2 border-ink">
+                <span className="relative mt-0.5 grid h-[18px] w-[18px] shrink-0 place-items-center rounded-[2px] border-2 border-signal">
                   <span className="check-box absolute inset-0" style={{ animationDelay: delay }} />
                   <svg viewBox="0 0 16 16" className="relative h-3 w-3" aria-hidden="true">
-                    <path d="M3 8.5l3.2 3L13 4.5" fill="none" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="check-mark stroke-signal" style={{ animationDelay: delay }} />
+                    <path d="M3 8.5l3.2 3L13 4.5" fill="none" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="check-mark stroke-paper" style={{ animationDelay: delay }} />
                   </svg>
                 </span>
                 <span className="min-w-0">{line}</span>
@@ -257,8 +257,9 @@ export default function App() {
   const route = useRoute();
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-paper font-sans text-ink antialiased">
-      <header className="sticky top-0 z-50 border-b border-ink/15 bg-paper">
+    <div className="min-h-screen overflow-x-clip bg-paper font-sans text-ink antialiased">
+      <div className="lane" aria-hidden="true" />
+      <header className="sticky top-0 z-50 border-b border-rule bg-paper">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
           <a href="#about" className="flex shrink-0 items-center gap-2.5 font-bold">
             <Mark />
@@ -266,12 +267,12 @@ export default function App() {
           </a>
           <nav aria-label="Sections" className="flex gap-0.5 overflow-x-auto text-[15px]">
             {NAV.map((item) => (
-              <a key={item.href} href={item.href} className="whitespace-nowrap rounded-sm px-2.5 py-1.5 font-medium text-ink-2 transition-colors hover:bg-signal hover:text-ink">
+              <a key={item.href} href={item.href} className="whitespace-nowrap rounded-sm px-2.5 py-1.5 font-medium text-ink-2 transition-colors hover:bg-signal hover:text-paper">
                 {item.label}
               </a>
             ))}
           </nav>
-          <a href={profile.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub profile" className="hidden shrink-0 rounded-sm p-2 text-ink-2 transition-colors hover:bg-signal hover:text-ink sm:block">
+          <a href={profile.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub profile" className="hidden shrink-0 rounded-sm p-2 text-ink-2 transition-colors hover:bg-signal hover:text-paper sm:block">
             <Github className="h-5 w-5" />
           </a>
         </div>
@@ -284,20 +285,20 @@ export default function App() {
       ) : (
       <main>
         {/* Hero: the yellow field */}
-        <section id="about" className="scroll-mt-16 bg-signal">
+        <section id="about" className="scroll-mt-16 border-b border-rule">
           <div className="mx-auto grid max-w-6xl items-end gap-12 px-4 pb-16 pt-14 sm:pt-20 lg:grid-cols-[1.25fr_1fr] lg:pb-20 [&>*]:min-w-0">
-            <div>
-              <p className="text-lg font-semibold">{profile.role}</p>
+            <div className="hero-name">
+              <p className="text-lg font-semibold text-signal">{profile.role}</p>
               <h1 className="display mt-4 text-6xl uppercase sm:text-8xl">Hi, I'm {profile.name}</h1>
               <p className="mt-8 max-w-xl text-xl font-medium leading-snug sm:text-2xl">{profile.tagline}</p>
-              <div className="mt-5 max-w-xl space-y-2 text-[17px] leading-relaxed text-ink/80">
+              <div className="mt-5 max-w-xl space-y-2 text-[17px] leading-relaxed text-ink-2">
                 {profile.about.map((line) => <p key={line}>{line}</p>)}
               </div>
               <div className="mt-9 flex flex-wrap gap-3">
-                <a href={profile.github} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-sm bg-ink px-5 py-3 font-semibold text-signal transition-colors hover:bg-ink/85">
+                <a href={profile.github} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-sm bg-signal px-5 py-3 font-semibold text-paper transition-colors hover:bg-ink">
                   <Github className="h-4 w-4" /> GitHub
                 </a>
-                <a href="#resources" className="inline-flex items-center gap-2 rounded-sm border-2 border-ink px-5 py-2.5 font-semibold transition-colors hover:bg-ink hover:text-signal">
+                <a href="#resources" className="inline-flex items-center gap-2 rounded-sm border-2 border-ink/60 px-5 py-2.5 font-semibold transition-colors hover:border-signal hover:text-signal">
                   Browse QA resources <ArrowRight className="h-4 w-4" />
                 </a>
               </div>
@@ -311,7 +312,7 @@ export default function App() {
           <SectionTitle title="Projects" aside="Test suites and tools I built and maintain." />
           <ol className="divide-y divide-rule">
             {projects.map((project) => (
-              <li key={project.name} className="group grid gap-4 py-8 first:pt-2 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:gap-10">
+              <li key={project.name} className="rise group grid gap-4 py-8 first:pt-2 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:gap-10">
                 <div className="min-w-0">
                   <h3 className="text-2xl font-bold leading-tight [overflow-wrap:anywhere]">
                     <a href={project.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-baseline gap-1.5 decoration-signal-deep decoration-[3px] hover:underline">
@@ -342,7 +343,7 @@ export default function App() {
           />
           <div className="divide-y divide-rule">
             {contributions.map((c) => (
-              <div key={c.project} className="grid gap-3 py-6 first:pt-2 md:grid-cols-[minmax(0,3fr)_minmax(0,8fr)] md:gap-10">
+              <div key={c.project} className="rise grid gap-3 py-6 first:pt-2 md:grid-cols-[minmax(0,3fr)_minmax(0,8fr)] md:gap-10">
                 <div>
                   <h3 className="text-xl font-bold">
                     <a href={c.projectUrl} target="_blank" rel="noopener noreferrer" className="decoration-signal-deep decoration-[3px] hover:underline">{c.project}</a>
@@ -370,7 +371,7 @@ export default function App() {
           <SectionTitle title="Notes" aside="Short write-ups of what I learned doing the work." />
           <ul className="divide-y divide-rule">
             {notes.map((n) => (
-              <li key={n.slug}>
+              <li key={n.slug} className="rise">
                 <a href={`#/notes/${n.slug}`} className="group grid gap-2 py-6 first:pt-2 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)_auto] md:items-baseline md:gap-10">
                   <h3 className="text-xl font-bold leading-snug decoration-signal-deep decoration-[3px] group-hover:underline">{n.title}</h3>
                   <p className="text-ink-2">{n.summary}</p>
@@ -386,7 +387,7 @@ export default function App() {
           <SectionTitle title="Skills" />
           <dl className="divide-y divide-rule">
             {skills.map((s) => (
-              <div key={s.group} className="grid gap-1 py-4 first:pt-0 sm:grid-cols-[14rem_minmax(0,1fr)] sm:gap-10">
+              <div key={s.group} className="rise grid gap-1 py-4 first:pt-0 sm:grid-cols-[14rem_minmax(0,1fr)] sm:gap-10">
                 <dt className="font-semibold text-ink-2">{s.group}</dt>
                 <dd className="text-lg">{s.items.join(', ')}</dd>
               </div>
@@ -395,20 +396,20 @@ export default function App() {
         </section>
 
         {/* Resources: the ink band */}
-        <section id="resources" className="scroll-mt-16 bg-ink text-paper">
+        <section id="resources" className="scroll-mt-16 bg-signal text-paper">
           <div className="mx-auto max-w-6xl px-4 py-20">
-            <div className="mb-10 flex flex-col gap-3 border-b-2 border-signal pb-4 sm:flex-row sm:items-end sm:justify-between">
-              <h2 className="display text-4xl uppercase sm:text-5xl">QA resources</h2>
-              <p className="max-w-sm text-paper/75 sm:text-right">A library I keep for my own work and share, free for anyone.</p>
+            <div className="mb-10 flex flex-col gap-3 border-b-2 border-paper pb-4 sm:flex-row sm:items-end sm:justify-between">
+              <h2 className="wipe display text-4xl uppercase sm:text-5xl">QA resources</h2>
+              <p className="max-w-sm font-medium text-paper/80 sm:text-right">A library I keep for my own work and share, free for anyone.</p>
             </div>
-            <ul className="grid gap-px bg-paper/15 sm:grid-cols-2 lg:grid-cols-4">
+            <ul className="grid border-y border-paper/30 lg:grid-cols-4">
               {RESOURCE_TABS.map(({ id, label, blurb }) => (
-                <li key={id} className="bg-ink">
-                  <a href={`#/resources/${id}`} className="group flex h-full flex-col p-5 transition-colors hover:bg-signal hover:text-ink sm:p-6">
+                <li key={id} className="slide border-paper/30 [&+&]:border-t lg:[&+&]:border-l lg:[&+&]:border-t-0">
+                  <a href={`#/resources/${id}`} className="group flex h-full flex-col p-5 transition-colors hover:bg-paper hover:text-signal sm:p-6">
                     <h3 className="flex items-center justify-between gap-2 text-xl font-bold">
                       {label} <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </h3>
-                    <p className="mt-2 text-paper/70 group-hover:text-ink/80">{blurb}</p>
+                    <p className="mt-2 text-paper/80 group-hover:text-ink-2">{blurb}</p>
                   </a>
                 </li>
               ))}
@@ -418,7 +419,7 @@ export default function App() {
       </main>
       )}
 
-      <footer className="border-t border-ink/15">
+      <footer className="border-t border-rule">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 text-sm text-ink-2 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} {profile.fullName}</p>
           <p>Built with React, tested with Playwright on every pull request.</p>
