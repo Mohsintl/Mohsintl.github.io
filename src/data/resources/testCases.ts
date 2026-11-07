@@ -1,11 +1,16 @@
-import { useState } from 'react';
-import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
+/** Manual test cases for well-known apps, grouped by app. */
+export type TestCase = {
+  id: string;
+  title: string;
+  priority: string;
+  steps: string[];
+  expected: string;
+  preconditions: string;
+};
 
-interface TestCasesProps {
-  searchQuery: string;
-}
+export type AppTestCases = { id: string; app: string; category: string; cases: TestCase[] };
 
-const testCases = [
+export const testCases: AppTestCases[] = [
   {
     id: 'google-search',
     app: 'Google Search',
@@ -253,127 +258,3 @@ const testCases = [
     ]
   }
 ];
-
-export function TestCases({ searchQuery }: TestCasesProps) {
-  const [expandedApp, setExpandedApp] = useState<string | null>(null);
-  const [expandedCase, setExpandedCase] = useState<string | null>(null);
-  const filteredTestCases = testCases.filter(app =>
-    searchQuery === '' ||
-    app.app.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    app.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    app.cases.some(tc => 
-      tc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tc.id.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  );
-
-  return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      <div className="mb-8">
-        <h3 className="text-2xl font-bold text-slate-900 mb-2">Test Cases</h3>
-        <p className="text-slate-600">Real-world test cases for popular websites and applications</p>
-      </div>
-
-      <p className="text-slate-600 mb-6">
-        {filteredTestCases.length} application{filteredTestCases.length !== 1 ? 's' : ''} with test cases
-      </p>
-
-      <div className="space-y-4">
-        {filteredTestCases.map(app => (
-          <div key={app.id} className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
-            <button
-              onClick={() => setExpandedApp(expandedApp === app.id ? null : app.id)}
-              className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors"
-            >
-              <div className="flex items-center gap-4">
-                <div className="text-left">
-                  <h3 className="text-slate-900">{app.app}</h3>
-                  <span className="inline-block px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs mt-1">
-                    {app.category}
-                  </span>
-                  <p className="text-slate-600 text-sm mt-1">{app.cases.length} test cases</p>
-                </div>
-              </div>
-              {expandedApp === app.id ? (
-                <ChevronUp className="w-5 h-5 text-slate-400" />
-              ) : (
-                <ChevronDown className="w-5 h-5 text-slate-400" />
-              )}
-            </button>
-
-            {expandedApp === app.id && (
-              <div className="px-6 pb-6 space-y-3">
-                {app.cases.map(testCase => (
-                  <div key={testCase.id} className="border border-slate-200 rounded-lg overflow-hidden">
-                    <button
-                      onClick={() => setExpandedCase(expandedCase === testCase.id ? null : testCase.id)}
-                      className="w-full px-4 py-3 flex items-center justify-between bg-slate-50 hover:bg-slate-100 transition-colors"
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="px-2 py-1 bg-slate-200 text-slate-700 rounded text-xs font-mono">
-                          {testCase.id}
-                        </span>
-                        <span className="text-slate-900">{testCase.title}</span>
-                        <span className={`px-2 py-1 rounded text-xs ${
-                          testCase.priority === 'Critical' ? 'bg-red-100 text-red-700' :
-                          testCase.priority === 'High' ? 'bg-orange-100 text-orange-700' :
-                          'bg-yellow-100 text-yellow-700'
-                        }`}>
-                          {testCase.priority}
-                        </span>
-                      </div>
-                      {expandedCase === testCase.id ? (
-                        <ChevronUp className="w-4 h-4 text-slate-400" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4 text-slate-400" />
-                      )}
-                    </button>
-
-                    {expandedCase === testCase.id && (
-                      <div className="p-4 bg-white space-y-3">
-                        <div>
-                          <h4 className="text-slate-900 mb-2">Preconditions</h4>
-                          <p className="text-slate-600 text-sm">{testCase.preconditions}</p>
-                        </div>
-                        <div>
-                          <h4 className="text-slate-900 mb-2">Steps to Execute</h4>
-                          <ol className="list-decimal list-inside space-y-1">
-                            {testCase.steps.map((step, idx) => (
-                              <li key={idx} className="text-slate-600 text-sm">{step}</li>
-                            ))}
-                          </ol>
-                        </div>
-                        <div>
-                          <h4 className="text-slate-900 mb-2">Expected Result</h4>
-                          <p className="text-slate-600 text-sm">{testCase.expected}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {filteredTestCases.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-slate-500">No test cases found. Try adjusting your search.</p>
-        </div>
-      )}
-
-      <div className="mt-8 p-6 bg-indigo-50 border border-indigo-200 rounded-xl">
-        <div className="flex items-start gap-3">
-          <Plus className="w-5 h-5 text-indigo-600 mt-0.5" />
-          <div>
-            <h3 className="text-indigo-900 mb-2">Contribute Test Cases</h3>
-            <p className="text-indigo-700 text-sm">
-              Have test cases for other popular applications? Contribute to the community by submitting your test cases via GitHub.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}

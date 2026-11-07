@@ -1,11 +1,28 @@
-import { useState } from 'react';
-import { Copy, Check, FileText, AlertCircle, ClipboardList, Code, ExternalLink } from 'lucide-react';
+import { FileText, AlertCircle, ClipboardList } from 'lucide-react';
 
-interface TemplatesAndBoilerplatesProps {
-  searchQuery: string;
-}
+/** Copy-ready QA documents: bug reports, triage, test plans, and more. */
+export type Template = {
+  id: string;
+  title: string;
+  category: string;
+  icon: React.ReactNode;
+  color: string;
+  repoLink: string;
+  template: string;
+};
 
-const templates = [
+/** Framework starter code. */
+export type Boilerplate = {
+  id: string;
+  title: string;
+  framework: string;
+  language: string;
+  description: string;
+  repoLink: string;
+  code: string;
+};
+
+export const templates: Template[] = [
   {
     id: 'bug-report',
     title: 'Bug Report Template',
@@ -325,14 +342,14 @@ const templates = [
   }
 ];
 
-const boilerplates = [
+export const boilerplates: Boilerplate[] = [
   {
     id: 'selenium-java',
     title: 'Selenium Java TestNG Boilerplate',
     framework: 'Selenium',
     language: 'Java',
     description: 'Complete Selenium WebDriver project setup with TestNG, Page Object Model, and Maven',
-    repoLink: 'https://github.com/selenium-examples/java-testng-boilerplate',
+    repoLink: '',
     code: `// pom.xml
 <dependencies>
     <dependency>
@@ -396,7 +413,7 @@ public class BasePage {
     framework: 'Playwright',
     language: 'TypeScript',
     description: 'Modern Playwright setup with TypeScript, fixtures, and best practices',
-    repoLink: 'https://github.com/playwright-examples/typescript-boilerplate',
+    repoLink: '',
     code: `// package.json
 {
   "devDependencies": {
@@ -457,7 +474,7 @@ test.describe('Example Tests', () => {
     framework: 'Cypress',
     language: 'JavaScript',
     description: 'Cypress E2E testing setup with custom commands and best practices',
-    repoLink: 'https://github.com/cypress-examples/js-boilerplate',
+    repoLink: '',
     code: `// package.json
 {
   "devDependencies": {
@@ -511,7 +528,7 @@ describe('Example Test Suite', () => {
     framework: 'REST Assured',
     language: 'Java',
     description: 'API testing framework with REST Assured, TestNG, and request/response specs',
-    repoLink: 'https://github.com/api-testing/restassured-boilerplate',
+    repoLink: '',
     code: `// pom.xml
 <dependencies>
     <dependency>
@@ -585,7 +602,7 @@ public class UserAPITest extends BaseAPITest {
     framework: 'Pytest + Selenium',
     language: 'Python',
     description: 'Python test automation with Pytest, Selenium, and fixtures',
-    repoLink: 'https://github.com/pytest-examples/selenium-boilerplate',
+    repoLink: '',
     code: `# requirements.txt
 pytest==7.4.3
 selenium==4.15.2
@@ -700,7 +717,7 @@ function reproduceBug() {
     framework: 'Docker + Selenium',
     language: 'Docker',
     description: 'Docker compose setup for Selenium Grid with multiple browsers',
-    repoLink: 'https://github.com/selenium-docker/grid-setup',
+    repoLink: '',
     code: `# docker-compose.yml
 version: '3'
 services:
@@ -757,234 +774,3 @@ WebDriver driver = new RemoteWebDriver(
 );`
   }
 ];
-
-export function TemplatesAndBoilerplates({ searchQuery }: TemplatesAndBoilerplatesProps) {
-  const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [selectedBoilerplate, setSelectedBoilerplate] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'templates' | 'boilerplates'>('templates');
-  const filteredTemplates = templates.filter(template =>
-    searchQuery === '' ||
-    template.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    template.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const filteredBoilerplates = boilerplates.filter(bp =>
-    searchQuery === '' ||
-    bp.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    bp.framework.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    bp.language.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    bp.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const copyToClipboard = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
-  };
-
-  return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      <div className="mb-8">
-        <h3 className="text-2xl font-bold text-slate-900 mb-2">Templates & Boilerplates</h3>
-        <p className="text-slate-600">
-          {activeTab === 'templates' 
-            ? 'Professional templates for bug reports, triage, test plans, and more' 
-            : 'Framework boilerplates, starter projects, and bug reproduction templates with GitHub links'}
-        </p>
-      </div>
-
-      {/* Tabs */}
-      <div className="mb-6 border-b border-slate-200">
-        <div className="flex gap-4">
-          <button
-            onClick={() => setActiveTab('templates')}
-            className={`pb-3 px-2 transition-colors ${
-              activeTab === 'templates'
-                ? 'border-b-2 border-indigo-600 text-indigo-600'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <div className="flex items-center gap-2">
-              <FileText className="w-5 h-5" />
-              Templates ({filteredTemplates.length})
-            </div>
-          </button>
-          <button
-            onClick={() => setActiveTab('boilerplates')}
-            className={`pb-3 px-2 transition-colors ${
-              activeTab === 'boilerplates'
-                ? 'border-b-2 border-indigo-600 text-indigo-600'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <div className="flex items-center gap-2">
-              <Code className="w-5 h-5" />
-              Boilerplates ({filteredBoilerplates.length})
-            </div>
-          </button>
-        </div>
-      </div>
-
-      {/* Templates Content */}
-      {activeTab === 'templates' && (
-        <>
-          <p className="text-slate-600 mb-6">
-            {filteredTemplates.length} template{filteredTemplates.length !== 1 ? 's' : ''} available
-          </p>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {filteredTemplates.map(template => (
-              <div key={template.id} className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
-                <div className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-lg ${template.color}`}>
-                        {template.icon}
-                      </div>
-                      <div>
-                        <h3 className="text-slate-900">{template.title}</h3>
-                        <span className="inline-block px-2 py-1 bg-slate-100 text-slate-600 rounded text-xs mt-1">
-                          {template.category}
-                        </span>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => copyToClipboard(template.template, template.id)}
-                      className="flex items-center gap-2 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm"
-                    >
-                      {copiedId === template.id ? (
-                        <>
-                          <Check className="w-4 h-4" />
-                          Copied!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-4 h-4" />
-                          Copy
-                        </>
-                      )}
-                    </button>
-                  </div>
-
-                  {template.repoLink && (
-                    <a
-                      href={template.repoLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 text-sm mb-3"
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                      View Repository
-                    </a>
-                  )}
-
-                  <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                    <pre className="text-xs text-slate-700 whitespace-pre-wrap font-mono overflow-x-auto max-h-96 overflow-y-auto">
-                      {template.template}
-                    </pre>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {filteredTemplates.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-slate-500">No templates found. Try adjusting your search.</p>
-            </div>
-          )}
-        </>
-      )}
-
-      {/* Boilerplates Content */}
-      {activeTab === 'boilerplates' && (
-        <>
-          <p className="text-slate-600 mb-6">
-            {filteredBoilerplates.length} boilerplate{filteredBoilerplates.length !== 1 ? 's' : ''} available
-          </p>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {filteredBoilerplates.map(bp => (
-              <div key={bp.id} className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
-                <div className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="bg-gradient-to-br from-blue-500 to-cyan-600 p-2 rounded-lg">
-                          <Code className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                          <h3 className="text-slate-900">{bp.title}</h3>
-                        </div>
-                      </div>
-                      <p className="text-slate-600 text-sm mb-3">{bp.description}</p>
-                      <div className="flex gap-2 flex-wrap">
-                        <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">
-                          {bp.framework}
-                        </span>
-                        <span className="inline-block px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">
-                          {bp.language}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {bp.repoLink && (
-                    <a
-                      href={bp.repoLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 text-sm mb-3"
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                      View Repository
-                    </a>
-                  )}
-
-                  <div className="flex gap-2 mt-4">
-                    <button
-                      onClick={() => setSelectedBoilerplate(selectedBoilerplate === bp.id ? null : bp.id)}
-                      className="flex-1 py-2 px-3 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors text-sm"
-                    >
-                      {selectedBoilerplate === bp.id ? 'Hide Code' : 'View Code'}
-                    </button>
-                    <button
-                      onClick={() => copyToClipboard(bp.code, bp.id)}
-                      className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm"
-                    >
-                      {copiedId === bp.id ? (
-                        <>
-                          <Check className="w-4 h-4" />
-                          Copied!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-4 h-4" />
-                          Copy
-                        </>
-                      )}
-                    </button>
-                  </div>
-
-                  {selectedBoilerplate === bp.id && (
-                    <div className="mt-4 bg-slate-900 rounded-lg p-4 overflow-x-auto max-h-96 overflow-y-auto">
-                      <pre className="text-sm text-slate-100 whitespace-pre">
-                        <code>{bp.code}</code>
-                      </pre>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {filteredBoilerplates.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-slate-500">No boilerplates found. Try adjusting your search.</p>
-            </div>
-          )}
-        </>
-      )}
-    </div>
-  );
-}

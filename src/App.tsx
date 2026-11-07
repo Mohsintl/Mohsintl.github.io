@@ -3,7 +3,7 @@
  * library of QA resources. Static: every word comes from files in src/data
  * and the resource components, so it needs no backend.
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ArrowDown,
   ArrowUpRight,
@@ -18,26 +18,27 @@ import {
   Sparkles,
   TestTube,
   Users,
+  ArrowLeft,
 } from 'lucide-react';
 import { contributions, profile, projects, skills } from './data/profile';
-import { CheatSheetGrid } from './components/CheatSheetGrid';
-import { TemplatesAndBoilerplates } from './components/TemplatesAndBoilerplates';
-import { TestCases } from './components/TestCases';
-import { TestScripts } from './components/TestScripts';
+import { CheatSheets } from './components/resources/CheatSheets';
+import { Templates } from './components/resources/Templates';
+import { TestCases } from './components/resources/TestCases';
+import { TestScripts } from './components/resources/TestScripts';
 
 const NAV = [
   { href: '#about', label: 'About' },
   { href: '#projects', label: 'Projects' },
   { href: '#open-source', label: 'Open source' },
   { href: '#skills', label: 'Skills' },
-  { href: '#resources', label: 'QA resources' },
+  { href: '#/resources', label: 'QA resources' },
 ];
 
 const RESOURCE_TABS = [
-  { id: 'cheatsheets', label: 'Cheat sheets', icon: BookOpen },
-  { id: 'templates', label: 'Templates', icon: FileText },
-  { id: 'testcases', label: 'Test cases', icon: TestTube },
-  { id: 'testscripts', label: 'Test scripts', icon: Code },
+  { id: 'cheatsheets', label: 'Cheat sheets', icon: BookOpen, blurb: 'Commands and patterns for Selenium, Playwright, Cypress, API, performance, and security testing.' },
+  { id: 'templates', label: 'Templates', icon: FileText, blurb: 'Bug reports, triage, test plans, and framework starter code, ready to copy.' },
+  { id: 'testcases', label: 'Test cases', icon: TestTube, blurb: 'Manual test cases for well-known apps: steps, preconditions, and expected results.' },
+  { id: 'testscripts', label: 'Test scripts', icon: Code, blurb: 'Automation scripts in Selenium, Playwright, Cypress, REST Assured, and Appium.' },
 ] as const;
 
 type ResourceTab = (typeof RESOURCE_TABS)[number]['id'];
@@ -53,7 +54,7 @@ const TEST_RUN = [
   'profile › loads without console errors',
   'profile › lists every project and contribution',
   'profile › every section in the nav is reachable',
-  'resources › switches between resource tabs',
+  'resources › opens on its own page, tabs link',
   'resources › search narrows the cheat sheets',
   'profile › does not scroll sideways',
 ];
@@ -77,10 +78,97 @@ function SectionTitle({ kicker, title }: { kicker: string; title: string }) {
 }
 
 /** Root component: the whole site is one scrolling page. */
-export default function App() {
-  const [tab, setTab] = useState<ResourceTab>('cheatsheets');
-  const [category, setCategory] = useState('all');
+type Route = { page: 'home' } | { page: 'resources'; tab: ResourceTab };
+
+/** Reads the route from the URL hash: `#/resources[/tab]` is the resources page, anything else is home. */
+function readRoute(): Route {
+  const m = window.location.hash.match(/^#\/resources(?:\/([a-z]+))?/);
+  if (!m) return { page: 'home' };
+  const tab = RESOURCE_TABS.find((t) => t.id === m[1])?.id ?? 'cheatsheets';
+  return { page: 'resources', tab };
+}
+
+/** Follows hash changes; on home, scrolls to the section the hash names. */
+function useRoute(): Route {
+  const [route, setRoute] = useState(readRoute);
+  useEffect(() => {
+    const onHash = () => setRoute(readRoute());
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+  useEffect(() => {
+    if (route.page === 'resources') {
+      window.scrollTo({ top: 0 });
+      return;
+    }
+    const id = window.location.hash.slice(1);
+    if (id) document.getElementById(id)?.scrollIntoView();
+  }, [route.page]);
+  return route;
+}
+
+/** The resources library: its own page, one tab per resource type. */
+function ResourcesPage({ tab }: { tab: ResourceTab }) {
   const [query, setQuery] = useState('');
+  const current = RESOURCE_TABS.find((t) => t.id === tab)!;
+  return (
+    <main className="relative">
+      <div className="bg-grid pointer-events-none absolute inset-x-0 top-0 h-80" />
+      <div className="relative mx-auto max-w-6xl px-4 pb-24 pt-12">
+        <a href="#about" className="inline-flex items-center gap-1.5 font-mono text-xs text-slate-500 hover:text-white">
+          <ArrowLeft className="h-3.5 w-3.5" /> back to profile
+        </a>
+        <p className="mt-8 font-mono text-sm text-emerald-400">// free for anyone</p>
+        <h1 className="mt-2 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">QA resources</h1>
+        <p className="mt-4 max-w-2xl text-slate-400">
+          Cheat sheets, templates, test cases, and scripts I keep for my own work, shared for anyone who finds them useful.
+          Spotted a mistake or have one to add?{' '}
+          <a href={`${profile.repository}/issues/new`} target="_blank" rel="noopener noreferrer" className="text-emerald-300 underline-offset-4 hover:underline">Open an issue</a> or a pull request.
+        </p>
+
+        <div className="sticky top-[57px] z-40 -mx-4 mt-10 border-b border-white/5 bg-slate-950/80 px-4 py-4 backdrop-blur-xl">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <nav role="tablist" aria-label="Resource type" className="flex gap-1 overflow-x-auto">
+              {RESOURCE_TABS.map(({ id, label, icon: Icon }) => (
+                <a
+                  key={id}
+                  role="tab"
+                  href={`#/resources/${id}`}
+                  aria-selected={tab === id}
+                  className={`flex items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm transition ${tab === id ? 'bg-white font-medium text-slate-950' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}
+                >
+                  <Icon className="h-4 w-4" /> {label}
+                </a>
+              ))}
+            </nav>
+            <div className="relative w-full lg:max-w-xs">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+              <input
+                type="search"
+                aria-label="Search resources"
+                placeholder="Search resources"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="w-full rounded-full border border-white/10 bg-white/5 py-2 pl-9 pr-4 text-sm text-white placeholder:text-slate-500 focus:border-emerald-400/50 focus:outline-none focus:ring-2 focus:ring-emerald-400/20"
+              />
+            </div>
+          </div>
+        </div>
+
+        <p className="mb-8 mt-6 text-sm text-slate-500">{current.blurb}</p>
+        <div role="tabpanel" aria-label={current.label}>
+          {tab === 'cheatsheets' && <CheatSheets query={query} />}
+          {tab === 'templates' && <Templates query={query} />}
+          {tab === 'testcases' && <TestCases query={query} />}
+          {tab === 'testscripts' && <TestScripts query={query} />}
+        </div>
+      </div>
+    </main>
+  );
+}
+
+export default function App() {
+  const route = useRoute();
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-slate-950 font-sans text-slate-300 antialiased selection:bg-indigo-500/40 selection:text-white">
@@ -103,6 +191,9 @@ export default function App() {
         </div>
       </header>
 
+      {route.page === 'resources' ? (
+        <ResourcesPage tab={route.tab} />
+      ) : (
       <main>
         {/* Hero */}
         <section id="about" className="relative scroll-mt-20">
@@ -157,7 +248,7 @@ export default function App() {
                     </p>
                   ))}
                   <p className="term-line mt-2 text-emerald-300" style={{ animationDelay: `${0.6 + TEST_RUN.length * 0.35 + 0.2}s` }}>
-                    20 passed <span className="text-slate-500">· desktop + mobile</span>
+                    32 passed <span className="text-slate-500">· desktop + mobile</span>
                     <span className="cursor ml-1 inline-block h-4 w-2 translate-y-0.5 bg-emerald-300" />
                   </p>
                 </div>
@@ -271,54 +362,28 @@ export default function App() {
           </div>
         </section>
 
-        {/* Resources */}
-        <section id="resources" className="scroll-mt-16 py-20">
-          <div className="mx-auto max-w-6xl px-4">
-            <SectionTitle kicker="free for anyone" title="QA resources" />
-            <p className="-mt-6 mb-8 max-w-2xl text-slate-400">
-              Cheat sheets, templates, test cases, and scripts I keep for my own work, shared for anyone who finds them useful.
-              Spotted a mistake or have one to add?{' '}
-              <a href={`${profile.repository}/issues/new`} target="_blank" rel="noopener noreferrer" className="text-emerald-300 underline-offset-4 hover:underline">Open an issue</a> or a pull request.
-            </p>
-          </div>
-          <div className="mx-auto max-w-6xl px-4">
-            <div className="overflow-hidden rounded-3xl bg-slate-50 text-slate-800 shadow-2xl shadow-indigo-950/50 ring-1 ring-white/10">
-              <div className="border-b border-slate-200 bg-white px-4 py-6 sm:px-8">
-                <div className="relative max-w-xl">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                  <input
-                    type="search"
-                    aria-label="Search resources"
-                    placeholder="Search resources"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    className="w-full rounded-xl border border-slate-300 py-2.5 pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-                <div role="tablist" aria-label="Resource type" className="mt-5 flex gap-2 overflow-x-auto">
-                  {RESOURCE_TABS.map(({ id, label, icon: Icon }) => (
-                    <button
-                      key={id}
-                      role="tab"
-                      aria-selected={tab === id}
-                      onClick={() => setTab(id)}
-                      className={`flex items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition ${tab === id ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                    >
-                      <Icon className="h-4 w-4" /> {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div role="tabpanel" className="[&>div]:max-w-none [&>div]:px-4 sm:[&>div]:px-8">
-                {tab === 'cheatsheets' && <CheatSheetGrid selectedCategory={category} setSelectedCategory={setCategory} searchQuery={query} />}
-                {tab === 'templates' && <TemplatesAndBoilerplates searchQuery={query} />}
-                {tab === 'testcases' && <TestCases searchQuery={query} />}
-                {tab === 'testscripts' && <TestScripts searchQuery={query} />}
-              </div>
-            </div>
+        {/* Resources teaser */}
+        <section id="resources" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-20">
+          <SectionTitle kicker="free for anyone" title="QA resources" />
+          <p className="-mt-6 mb-8 max-w-2xl text-slate-400">
+            A library I keep for my own work and share: cheat sheets, templates, manual test cases, and automation scripts.
+          </p>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {RESOURCE_TABS.map(({ id, label, icon: Icon, blurb }) => (
+              <a key={id} href={`#/resources/${id}`} className="group rounded-2xl border border-white/10 bg-white/[0.03] p-5 transition hover:-translate-y-1 hover:border-emerald-400/40">
+                <Icon className="h-6 w-6 text-emerald-300" />
+                <h3 className="mt-4 font-semibold text-white">{label}</h3>
+                <p className="mt-1 text-sm text-slate-400">{blurb}</p>
+                <span className="mt-4 inline-flex items-center gap-1 font-mono text-xs text-slate-500 group-hover:text-emerald-300">
+                  open <ArrowUpRight className="h-3.5 w-3.5" />
+                </span>
+              </a>
+            ))}
           </div>
         </section>
       </main>
+      )}
+
 
       <footer className="border-t border-white/5">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-8 text-sm text-slate-500 sm:flex-row">
