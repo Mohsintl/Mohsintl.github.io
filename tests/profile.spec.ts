@@ -45,6 +45,19 @@ test('external links open in a new tab safely', async ({ page }) => {
   }
 });
 
+test('keeps the hero text and terminal inside the viewport', async ({ page }) => {
+  const width = page.viewportSize()!.width;
+  for (const locator of [
+    page.getByRole('heading', { level: 1 }),
+    page.getByText(profile.tagline),
+    page.getByText('npx playwright test'),
+  ]) {
+    const box = (await locator.boundingBox())!;
+    expect(box.x).toBeGreaterThanOrEqual(0);
+    expect(box.x + box.width).toBeLessThanOrEqual(width);
+  }
+});
+
 test('does not scroll sideways', async ({ page }) => {
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(0);
