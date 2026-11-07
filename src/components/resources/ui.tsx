@@ -17,7 +17,7 @@ export function CopyButton({ text, label = 'Copy' }: { text: string; label?: str
           // Clipboard access can be refused (insecure context, permissions); the code stays selectable.
         }
       }}
-      className="inline-flex shrink-0 items-center gap-1.5 rounded-sm border border-ink/30 bg-sheet px-2.5 py-1.5 text-sm font-medium text-ink transition-colors hover:border-ink hover:bg-signal"
+      className="inline-flex shrink-0 items-center gap-1.5 rounded-sm border border-ink/30 bg-sheet px-2.5 py-1.5 text-sm font-medium text-ink transition-colors hover:border-signal hover:bg-signal hover:text-paper"
     >
       {copied ? <Check className="h-3.5 w-3.5 text-pass" /> : <Copy className="h-3.5 w-3.5" />}
       {copied ? 'Copied' : label}
@@ -28,7 +28,7 @@ export function CopyButton({ text, label = 'Copy' }: { text: string; label?: str
 /** An ink code block that scrolls instead of widening the page. */
 export function CodeBlock({ code, wrap = false, maxHeight = true }: { code: string; wrap?: boolean; maxHeight?: boolean }) {
   return (
-    <pre className={`overflow-x-auto rounded-sm bg-ink p-4 font-mono text-[12.5px] leading-relaxed text-paper ${wrap ? 'whitespace-pre-wrap' : ''} ${maxHeight ? 'max-h-96 overflow-y-auto' : ''}`}>
+    <pre className={`overflow-x-auto rounded-sm border border-rule bg-code p-4 font-mono text-[12.5px] leading-relaxed text-ink ${wrap ? 'whitespace-pre-wrap' : ''} ${maxHeight ? 'max-h-96 overflow-y-auto' : ''}`}>
       <code>{code}</code>
     </pre>
   );
@@ -37,7 +37,7 @@ export function CodeBlock({ code, wrap = false, maxHeight = true }: { code: stri
 /** Small pill for tags and categories. */
 export function Tag({ children, strong = false }: { children: React.ReactNode; strong?: boolean }) {
   return (
-    <span className={`inline-flex rounded-sm px-2 py-0.5 text-[13px] font-medium ${strong ? 'bg-signal text-ink' : 'bg-ink/[0.07] text-ink-2'}`}>
+    <span className={`inline-flex rounded-sm px-2 py-0.5 text-[13px] font-medium ${strong ? 'bg-signal text-paper' : 'bg-ink/[0.07] text-ink-2'}`}>
       {children}
     </span>
   );
@@ -59,4 +59,4 @@ export function Count({ n, one, many }: { n: number; one: string; many: string }
 }
 
 /** Card shell shared by every resource type. */
-export const card = 'rounded-sm border border-rule bg-sheet transition-colors hover:border-ink/40';
+export const card = 'rounded-sm border border-rule bg-sheet transition-colors hover:border-ink/30';

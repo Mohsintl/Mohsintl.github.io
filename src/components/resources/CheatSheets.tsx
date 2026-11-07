@@ -27,7 +27,7 @@ export function CheatSheets({ query }: { query: string }) {
             onClick={() => setCategory(c.id)}
             aria-pressed={category === c.id}
             className={`rounded-sm border px-3 py-1.5 text-[15px] font-medium transition-colors ${
-              category === c.id ? 'border-ink bg-ink text-signal' : 'border-ink/25 text-ink-2 hover:border-ink hover:text-ink'
+              category === c.id ? 'border-signal bg-signal text-paper' : 'border-ink/25 text-ink-2 hover:border-ink hover:text-ink'
             }`}
           >
             {c.label}
@@ -59,7 +59,7 @@ function SheetCard({ sheet }: { sheet: CheatSheet }) {
         type="button"
         onClick={() => setOpen(!open)}
         aria-expanded={open}
-        className="mt-5 flex w-full items-center justify-center gap-2 rounded-sm border border-ink/30 py-2 text-[15px] font-semibold transition-colors hover:border-ink hover:bg-signal"
+        className="mt-5 flex w-full items-center justify-center gap-2 rounded-sm border border-ink/30 py-2 text-[15px] font-semibold transition-colors hover:border-signal hover:bg-signal hover:text-paper"
       >
         <ChevronDown className={`h-4 w-4 transition ${open ? 'rotate-180' : ''}`} />
         {open ? 'Hide details' : 'View cheat sheet'}
@@ -93,7 +93,7 @@ function SheetCard({ sheet }: { sheet: CheatSheet }) {
               <h4 className="mb-3 font-bold">Further reading</h4>
               <div className="flex flex-wrap gap-2">
                 {sheet.resources.map((r) => (
-                  <a key={r.url} href={r.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-sm border border-ink/25 px-3 py-1.5 text-sm font-medium hover:border-ink hover:bg-signal">
+                  <a key={r.url} href={r.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-sm border border-ink/25 px-3 py-1.5 text-sm font-medium hover:border-signal hover:bg-signal hover:text-paper">
                     <ExternalLink className="h-3.5 w-3.5" /> {r.label}
                   </a>
                 ))}
