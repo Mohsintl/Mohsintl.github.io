@@ -33,6 +33,7 @@ The first `npm test` needs a browser: `npx playwright install chromium`.
 
 - every project and contribution in `profile.ts` is listed with its link
 - each nav link reaches its section, and the page never scrolls sideways
+- the hero heading, tagline, and terminal stay inside the viewport on a phone
 - external links open in a new tab with `rel="noopener"`
 - resource tabs switch, search narrows the cheat sheets, and the category filter works
 - the page loads with no console errors
