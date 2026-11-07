@@ -1,9 +1,5 @@
 import { useState } from 'react';
-import { useEffect } from 'react';
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
-import { SubmitTestCase } from './SubmitTestCase';
-import { siteConfig } from '../config';
-import { getApprovedContent } from '../utils/api';
 
 interface TestCasesProps {
   searchQuery: string;
@@ -261,31 +257,7 @@ const testCases = [
 export function TestCases({ searchQuery }: TestCasesProps) {
   const [expandedApp, setExpandedApp] = useState<string | null>(null);
   const [expandedCase, setExpandedCase] = useState<string | null>(null);
-  const [showSubmitForm, setShowSubmitForm] = useState(false);
-  const [allTestCases, setAllTestCases] = useState(testCases);
-
-  // Load approved test cases and refetch on admin updates
-  useEffect(() => {
-    const loadApproved = async () => {
-      try {
-        const approved = await getApprovedContent('testcase');
-        const approvedItems = (approved.items || []).map((item: any, index: number) => ({
-          ...item,
-          id: item.id || `approved-testcase-${index}-${Date.now()}`
-        }));
-        setAllTestCases([...testCases, ...approvedItems]);
-      } catch (err) {
-        console.error('Failed to load approved test cases:', err);
-      }
-    };
-
-    loadApproved();
-    const onContentUpdated = () => loadApproved();
-    window.addEventListener('content-updated', onContentUpdated);
-    return () => window.removeEventListener('content-updated', onContentUpdated);
-  }, []);
-
-  const filteredTestCases = allTestCases.filter(app =>
+  const filteredTestCases = testCases.filter(app =>
     searchQuery === '' ||
     app.app.toLowerCase().includes(searchQuery.toLowerCase()) ||
     app.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -296,29 +268,11 @@ export function TestCases({ searchQuery }: TestCasesProps) {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="max-w-6xl mx-auto px-4 py-10">
       <div className="mb-8">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-slate-900">Test Cases</h2>
-          <button
-            onClick={() => setShowSubmitForm(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            <Plus className="w-5 h-5" />
-            Submit Test Case
-          </button>
-        </div>
+        <h3 className="text-2xl font-bold text-slate-900 mb-2">Test Cases</h3>
         <p className="text-slate-600">Real-world test cases for popular websites and applications</p>
       </div>
-
-      {showSubmitForm && (
-        <SubmitTestCase 
-          onClose={() => setShowSubmitForm(false)}
-          onSuccess={() => {
-            setShowSubmitForm(false);
-          }}
-        />
-      )}
 
       <p className="text-slate-600 mb-6">
         {filteredTestCases.length} application{filteredTestCases.length !== 1 ? 's' : ''} with test cases

@@ -1,12 +1,7 @@
 import { CheatSheetCard } from './CheatSheetCard';
 import { cheatSheets } from '../data/cheatSheets';
-import { SubmitCheatSheet } from './SubmitCheatSheet';
-import { useState, useEffect, useMemo } from 'react';
-import { Plus } from 'lucide-react';
-import { getApprovedContent } from '../utils/api';
-import { siteConfig } from '../config';
-import { LoadingSkeleton } from './ui/loading-skeleton';
-import type { CheatSheet } from '../data/cheatSheets';
+import { useMemo } from 'react';
+import { cheatSheetCategories } from '../config';
 
 interface CheatSheetGridProps {
   selectedCategory: string;
@@ -19,46 +14,12 @@ export function CheatSheetGrid({
   setSelectedCategory,
   searchQuery,
 }: CheatSheetGridProps) {
-  const [showSubmitForm, setShowSubmitForm] = useState(false);
-  const [allSheets, setAllSheets] = useState<CheatSheet[]>(cheatSheets);
-  const [loading, setLoading] = useState(true);
-
-  // Load approved user-submitted cheat sheets on mount
-  useEffect(() => {
-    loadApprovedContent();
-
-    // Listen for global content updates triggered from AdminPanel
-    const onContentUpdated = () => loadApprovedContent();
-    window.addEventListener('content-updated', onContentUpdated);
-    return () => window.removeEventListener('content-updated', onContentUpdated);
-  }, []);
-
-  /**
-   * Fetch user-submitted cheat sheets that have been approved.
-   */
-  async function loadApprovedContent(): Promise<void> {
-    try {
-      setLoading(true);
-      const data = await getApprovedContent('cheatsheet');
-      const approvedSheets = (data.items || []).map((item: any, index: number) => ({
-        ...item,
-        // Ensure unique IDs for approved items to prevent React key conflicts
-        id: item.id || `approved-${index}-${Date.now()}`,
-      }));
-      setAllSheets([...cheatSheets, ...approvedSheets]);
-    } catch (error) {
-      console.error('Failed to load approved cheat sheets:', error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   /**
    * Filter cheat sheets by category and search query.
    * Memoized to avoid unnecessary re-computation.
    */
   const filteredSheets = useMemo(() => {
-    return allSheets.filter(sheet => {
+    return cheatSheets.filter(sheet => {
       const categoryMatch = selectedCategory === 'all' || sheet.category === selectedCategory;
       const searchQuery_lower = searchQuery.toLowerCase();
 
@@ -70,25 +31,15 @@ export function CheatSheetGrid({
 
       return categoryMatch && searchMatch;
     });
-  }, [allSheets, selectedCategory, searchQuery]);
+  }, [selectedCategory, searchQuery]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Header with submit button */}
-      <div className="flex items-center justify-between mb-8">
-        <h2 className="text-3xl font-bold text-slate-900">Cheat Sheets</h2>
-        <button
-          onClick={() => setShowSubmitForm(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
-        >
-          <Plus className="w-5 h-5" />
-          Submit
-        </button>
-      </div>
+    <div className="max-w-6xl mx-auto px-4 py-10">
+      <h3 className="text-2xl font-bold text-slate-900 mb-6">Cheat Sheets</h3>
 
       {/* Category filter buttons */}
       <div className="flex flex-wrap gap-3 mb-8">
-        {siteConfig.categories.cheatsheet.map(category => (
+        {cheatSheetCategories.map(category => (
           <button
             key={category.id}
             onClick={() => setSelectedCategory(category.id)}
@@ -104,16 +55,7 @@ export function CheatSheetGrid({
         ))}
       </div>
 
-      {/* Loading state */}
-      {loading ? (
-        <>
-          <div className="h-4 w-32 bg-slate-200 rounded animate-pulse mb-6"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <LoadingSkeleton variant="card" count={6} />
-          </div>
-        </>
-      ) : (
-        <>
+      <>
           {/* Results counter */}
           <p className="text-slate-600 mb-6 text-sm">
             {filteredSheets.length} cheat sheet{filteredSheets.length !== 1 ? 's' : ''}
@@ -134,19 +76,7 @@ export function CheatSheetGrid({
               </p>
             </div>
           )}
-        </>
-      )}
-
-      {/* Submit Form Modal */}
-      {showSubmitForm && (
-        <SubmitCheatSheet
-          onClose={() => setShowSubmitForm(false)}
-          onSuccess={() => {
-            setShowSubmitForm(false);
-            loadApprovedContent();
-          }}
-        />
-      )}
+      </>
     </div>
   );
 }

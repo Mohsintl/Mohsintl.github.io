@@ -1,9 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Copy, Check, FileText, AlertCircle, ClipboardList, Plus, Code, ExternalLink } from 'lucide-react';
-import { SubmitTemplate } from './SubmitTemplate';
-import { SubmitBoilerplate } from './SubmitBoilerplate';
-import { getApprovedContent } from '../utils/api';
-import { siteConfig } from '../config';
+import { useState } from 'react';
+import { Copy, Check, FileText, AlertCircle, ClipboardList, Code, ExternalLink } from 'lucide-react';
 
 interface TemplatesAndBoilerplatesProps {
   searchQuery: string;
@@ -764,67 +760,15 @@ WebDriver driver = new RemoteWebDriver(
 
 export function TemplatesAndBoilerplates({ searchQuery }: TemplatesAndBoilerplatesProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [showSubmitTemplateForm, setShowSubmitTemplateForm] = useState(false);
-  const [showSubmitBoilerplateForm, setShowSubmitBoilerplateForm] = useState(false);
   const [selectedBoilerplate, setSelectedBoilerplate] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'templates' | 'boilerplates'>('templates');
-  const [allTemplates, setAllTemplates] = useState(templates);
-  const [allBoilerplates, setAllBoilerplates] = useState(boilerplates);
-
-  // Fetch approved templates and boilerplates
-  useEffect(() => {
-    const loadApproved = async () => {
-      try {
-        // Fetch approved templates
-        const approvedTemplates = await getApprovedContent('template');
-        // Fetch approved boilerplates
-        const approvedBoilerplates = await getApprovedContent('boilerplate');
-        // If you merge them into local state, do it here
-        setAllTemplates([...templates, ...(approvedTemplates.items || [])]);
-        setAllBoilerplates([...boilerplates, ...(approvedBoilerplates.items || [])]);
-      } catch (err) {
-        console.error('Failed to load approved templates/boilerplates:', err);
-      }
-    };
-
-    loadApproved();
-
-    // Listen for global updates and refetch
-    const onContentUpdated = () => loadApproved();
-    window.addEventListener('content-updated', onContentUpdated);
-    return () => window.removeEventListener('content-updated', onContentUpdated);
-  }, []);
-
-  async function loadApprovedContent() {
-    try {
-      const [templateData, boilerplateData] = await Promise.all([
-        getApprovedContent('template'),
-        getApprovedContent('boilerplate')
-      ]);
-      
-      const approvedTemplates = (templateData.items || []).map((item: any, index: number) => ({
-        ...item,
-        id: item.id || `approved-template-${index}-${Date.now()}`
-      }));
-      const approvedBoilerplates = (boilerplateData.items || []).map((item: any, index: number) => ({
-        ...item,
-        id: item.id || `approved-boilerplate-${index}-${Date.now()}`
-      }));
-      
-      setAllTemplates([...templates, ...approvedTemplates]);
-      setAllBoilerplates([...boilerplates, ...approvedBoilerplates]);
-    } catch (error) {
-      console.error('Error loading approved content:', error);
-    }
-  }
-
-  const filteredTemplates = allTemplates.filter(template =>
+  const filteredTemplates = templates.filter(template =>
     searchQuery === '' ||
     template.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     template.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredBoilerplates = allBoilerplates.filter(bp =>
+  const filteredBoilerplates = boilerplates.filter(bp =>
     searchQuery === '' ||
     bp.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     bp.framework.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -839,48 +783,15 @@ export function TemplatesAndBoilerplates({ searchQuery }: TemplatesAndBoilerplat
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="max-w-6xl mx-auto px-4 py-10">
       <div className="mb-8">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-slate-900">Templates & Boilerplates</h2>
-          <button
-            onClick={() => {
-              if (activeTab === 'templates') {
-                setShowSubmitTemplateForm(true);
-              } else {
-                setShowSubmitBoilerplateForm(true);
-              }
-            }}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            <Plus className="w-5 h-5" />
-            Submit {activeTab === 'templates' ? 'Template' : 'Boilerplate'}
-          </button>
-        </div>
+        <h3 className="text-2xl font-bold text-slate-900 mb-2">Templates & Boilerplates</h3>
         <p className="text-slate-600">
           {activeTab === 'templates' 
             ? 'Professional templates for bug reports, triage, test plans, and more' 
             : 'Framework boilerplates, starter projects, and bug reproduction templates with GitHub links'}
         </p>
       </div>
-
-      {showSubmitTemplateForm && (
-        <SubmitTemplate 
-          onClose={() => setShowSubmitTemplateForm(false)}
-          onSuccess={() => {
-            setShowSubmitTemplateForm(false);
-          }}
-        />
-      )}
-
-      {showSubmitBoilerplateForm && (
-        <SubmitBoilerplate 
-          onClose={() => setShowSubmitBoilerplateForm(false)}
-          onSuccess={() => {
-            setShowSubmitBoilerplateForm(false);
-          }}
-        />
-      )}
 
       {/* Tabs */}
       <div className="mb-6 border-b border-slate-200">
