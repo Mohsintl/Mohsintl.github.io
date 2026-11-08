@@ -15,7 +15,7 @@ export const profile = {
   github: 'https://github.com/Mohsintl',
   githubHandle: 'Mohsintl',
   /** Where readers suggest a resource or fix: the site's own repository. */
-  repository: 'https://github.com/Mohsintl/qa-automation-resources',
+  repository: 'https://github.com/Mohsintl/portfolio',
 };
 
 export type Project = {
