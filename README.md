@@ -2,6 +2,8 @@
 
 My profile site: projects, open-source contributions, skills, and a library of **QA resources** (cheat sheets, templates and boilerplates, test cases, and test scripts).
 
+Live at **[mohsintl.is-a.dev](https://mohsintl.is-a.dev/)**.
+
 It is a static React site. There is no backend: every word comes from files in this repository.
 
 ## Run it
@@ -48,7 +50,7 @@ The resources live on their own page, `#/resources`, with a link per tab (`#/res
 
 `.github/workflows/deploy.yml` runs the tests on every pull request. A push to `main` runs them again and, if they pass, deploys `build/` to GitHub Pages.
 
-The build uses relative paths, so it works at `https://mohsintl.github.io/qa-automation-resources/` and on a custom domain such as a free `*.is-a.dev` subdomain.
+The site is served at `https://mohsintl.is-a.dev/`, a free is-a.dev subdomain set as the Pages custom domain. The build uses relative paths, so it also works at a project path such as `https://mohsintl.github.io/qa-automation-resources/`.
 
 ## Suggest a resource
 
