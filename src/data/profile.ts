@@ -79,12 +79,21 @@ export const contributions: Contribution[] = [
     ],
   },
   {
+    project: 'test-reporter',
+    projectUrl: 'https://github.com/dorny/test-reporter',
+    about: 'Test results in GitHub Actions',
+    items: [
+      { label: 'Document when checks: write is needed', url: 'https://github.com/dorny/test-reporter/pull/865', status: 'in review' },
+    ],
+  },
+  {
     project: 'OpenRig',
     projectUrl: 'https://github.com/mvschwarz/openrig',
     about: 'Multi-agent orchestration CLI and daemon',
     items: [
       { label: 'Warn on an unrecognized --kind in rig specs commands', url: 'https://github.com/mvschwarz/openrig/pull/2365', status: 'merged' },
       { label: 'Readable error when daemon workspace validation refuses', url: 'https://github.com/mvschwarz/openrig/pull/2367', status: 'merged' },
+      { label: 'Refocus traces work in catalogued projects outside the workspace root', url: 'https://github.com/mvschwarz/openrig/pull/2717', status: 'merged' },
     ],
   },
   {
