@@ -75,7 +75,7 @@ test('the suggest link points at the site repository issues', async ({ page }) =
   await page.goto('/#/resources');
   await expect(page.getByRole('link', { name: 'Open an issue' })).toHaveAttribute(
     'href',
-    'https://github.com/Mohsintl/qa-automation-resources/issues/new',
+    'https://github.com/Mohsintl/portfolio/issues/new',
   );
 });
 
