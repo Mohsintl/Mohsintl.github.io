@@ -28,9 +28,8 @@ test('lists every project and contribution from the profile data', async ({ page
 test('every section in the nav exists and is reachable', async ({ page, isMobile }) => {
   const nav = page.getByRole('navigation', { name: 'Sections' });
   for (const id of ['about', 'experience', 'projects', 'open-source', 'notes', 'skills', 'contact']) {
-    const link = nav.locator(`a[href="/#${id}"]`);
-    if (isMobile) await link.scrollIntoViewIfNeeded();
-    await link.click();
+    if (isMobile) await page.getByLabel('Menu').click();
+    await nav.locator(`a[href="/#${id}"]`).click();
     await expect(page).toHaveURL(new RegExp(`/#${id}$`));
     await expect(page.locator(`#${id}`)).toBeInViewport();
   }

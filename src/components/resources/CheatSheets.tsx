@@ -65,7 +65,7 @@ function SheetCard({ sheet }: { sheet: CheatSheet }) {
         {open ? 'Hide details' : 'View cheat sheet'}
       </button>
       {open && (
-        <div className="mt-6 grid gap-8 border-t border-rule pt-6 lg:grid-cols-2">
+        <div className="mt-6 grid gap-8 border-t border-rule pt-6 lg:grid-cols-2 [&>*]:min-w-0">
           {sheet.sections.map((section) => (
             <section key={section.title}>
               <h4 className="mb-3 border-b-2 border-signal-deep pb-1 font-bold">{section.title}</h4>

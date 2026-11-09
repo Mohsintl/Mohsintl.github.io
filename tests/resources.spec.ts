@@ -2,9 +2,8 @@ import { expect, test } from '@playwright/test';
 
 test('the nav opens the resources page and back to profile returns home', async ({ page, isMobile }) => {
   await page.goto('/');
-  const link = page.getByRole('navigation', { name: 'Sections' }).getByRole('link', { name: 'QA resources' });
-  if (isMobile) await link.scrollIntoViewIfNeeded();
-  await link.click();
+  if (isMobile) await page.getByLabel('Menu').click();
+  await page.getByRole('navigation', { name: 'Sections' }).getByRole('link', { name: 'QA resources' }).click();
   await expect(page).toHaveURL(/\/resources\/$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('QA resources');
   await expect(page.getByRole('tab', { name: 'Cheat sheets' })).toHaveAttribute('aria-selected', 'true');
