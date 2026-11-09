@@ -75,7 +75,7 @@ export const contributions: Contribution[] = [
     about: 'Agentic end-to-end testing framework',
     items: [
       { label: 'Fix date patterns in the replay cache', url: 'https://github.com/tester-army/e2e/pull/1511', status: 'merged' },
-      { label: 'JUnit failure screenshots as GitLab attachments', url: 'https://github.com/tester-army/e2e/pull/1526', status: 'in review' },
+      { label: 'JUnit failure screenshots as GitLab attachments', url: 'https://github.com/tester-army/e2e/pull/1526', status: 'merged' },
     ],
   },
   {
