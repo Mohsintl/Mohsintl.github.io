@@ -3,8 +3,8 @@
  * a library of QA resources. Static: every word comes from files in src/data
  * and the resource components, so it needs no backend.
  */
-import { useState } from 'react';
-import { ArrowLeft, ArrowRight, ArrowUpRight, Github, Linkedin, Mail, Search } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { ArrowLeft, ArrowRight, ArrowUpRight, Github, Linkedin, Mail, Menu, Search, X } from 'lucide-react';
 import { certifications, contributions, experience, profile, projects, skills, type Contribution } from './data/profile';
 import { notes, type Note } from './data/notes';
 import { pathFor, RESOURCE_TABS, type ResourceTab, type Route } from './routes';
@@ -39,7 +39,7 @@ const TEST_RUN = [
   'resources › search narrows the cheat sheets',
   'profile › does not scroll sideways',
 ];
-const TEST_TOTAL = '76 passed';
+const TEST_TOTAL = '98 passed';
 
 const allItems = contributions.flatMap((c) => c.items);
 const landed = allItems.filter((i) => i.status !== 'in review').length;
@@ -135,7 +135,7 @@ function ResourcesPage({ tab }: { tab: ResourceTab }) {
                   role="tab"
                   href={pathFor({ page: 'resources', tab: id })}
                   aria-selected={tab === id}
-                  className={`whitespace-nowrap border-b-4 px-3 py-3 text-[15px] font-semibold transition-colors first:pl-0 sm:px-4 ${tab === id ? 'border-signal-deep text-ink' : 'border-transparent text-ink-3 hover:text-ink'}`}
+                  className={`whitespace-nowrap border-b-4 px-1.5 py-3 text-sm font-semibold tracking-tight transition-colors first:pl-0 sm:px-4 sm:text-[15px] sm:tracking-normal ${tab === id ? 'border-signal-deep text-ink' : 'border-transparent text-ink-3 hover:text-ink'}`}
                 >
                   {label}
                 </a>
@@ -220,6 +220,44 @@ function NotFoundPage() {
   );
 }
 
+/**
+ * The section links for narrow screens, where eight links in a row would scroll sideways.
+ * A <details> element so the menu still opens on the prerendered page before (or without) JavaScript.
+ */
+function MobileMenu() {
+  const menu = useRef<HTMLDetailsElement>(null);
+  const close = () => menu.current?.removeAttribute('open');
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && close();
+    const onClickAway = (e: MouseEvent) => menu.current && !menu.current.contains(e.target as Node) && close();
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('click', onClickAway);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('click', onClickAway);
+    };
+  }, []);
+  return (
+    <details ref={menu} className="group lg:hidden">
+      <summary aria-label="Menu" className="flex cursor-pointer list-none items-center rounded-sm p-2 text-ink-2 transition-colors hover:bg-signal hover:text-paper [&::-webkit-details-marker]:hidden">
+        <Menu className="h-5 w-5 group-open:hidden" />
+        <X className="hidden h-5 w-5 group-open:block" />
+      </summary>
+      <nav aria-label="Sections" className="absolute inset-x-0 top-full border-b border-rule bg-paper px-4 pb-4 pt-2 shadow-lg">
+        <ul className="mx-auto grid max-w-6xl grid-cols-2 gap-1 text-[15px]">
+          {NAV.map((item) => (
+            <li key={item.href}>
+              <a href={item.href} onClick={close} className="block rounded-sm px-3 py-2.5 font-medium text-ink-2 transition-colors hover:bg-signal hover:text-paper">
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </details>
+  );
+}
+
 /** The whole site; `route` says which page to render (from the URL in the browser, or from the prerender list at build time). */
 export default function App({ route }: { route: Route }) {
 
@@ -232,16 +270,19 @@ export default function App({ route }: { route: Route }) {
             <span className="text-signal">{profile.name[0]}</span>
             <span className="hidden sm:inline">{profile.name.slice(1)}</span>
           </a>
-          <nav aria-label="Sections" className="flex gap-0.5 overflow-x-auto text-[15px]">
+          <nav aria-label="Sections" className="hidden gap-0.5 text-[15px] lg:flex">
             {NAV.map((item) => (
               <a key={item.href} href={item.href} className="whitespace-nowrap rounded-sm px-2.5 py-1.5 font-medium text-ink-2 transition-colors hover:bg-signal hover:text-paper">
                 {item.label}
               </a>
             ))}
           </nav>
-          <a href={profile.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub profile" className="hidden shrink-0 rounded-sm p-2 text-ink-2 transition-colors hover:bg-signal hover:text-paper sm:block">
-            <Github className="h-5 w-5" />
-          </a>
+          <div className="flex items-center gap-1">
+            <a href={profile.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub profile" className="shrink-0 rounded-sm p-2 text-ink-2 transition-colors hover:bg-signal hover:text-paper">
+              <Github className="h-5 w-5" />
+            </a>
+            <MobileMenu />
+          </div>
         </div>
       </header>
 
