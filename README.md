@@ -6,6 +6,8 @@ Live at **[mohsintl.is-a.dev](https://mohsintl.is-a.dev/)**.
 
 It is a static React site. There is no backend: every word comes from files in this repository.
 
+Every page is prerendered to its own HTML file at build time, so search engines, link previews and AI tools that don't run JavaScript see the full content. React then hydrates the page in the browser.
+
 ## Run it
 
 Requires Node.js 20 or later.
@@ -24,13 +26,20 @@ The first `npm test` needs a browser: `npx playwright install chromium`.
 | What | Where |
 | :--- | :--- |
 | Name, role, about, projects, contributions, skills | `src/data/profile.ts` |
-| Notes (write-ups, each at `#/notes/<slug>`) | `src/data/notes.ts` |
+| Notes (write-ups, each at `/notes/<slug>/`) | `src/data/notes.ts` |
 | Cheat sheets | `src/data/resources/cheatSheets.tsx` |
 | Templates and boilerplates | `src/data/resources/templates.tsx` |
 | Test cases | `src/data/resources/testCases.ts` |
 | Test scripts | `src/data/resources/testScripts.ts` |
 
-The resources live on their own page, `#/resources`, with a link per tab (`#/resources/templates`, `#/resources/testcases`, `#/resources/testscripts`).
+The resources live on their own page, `/resources/`, with a page per tab (`/resources/templates/`, `/resources/testcases/`, `/resources/testscripts/`). Old `#/resources` and `#/notes/...` links redirect to these.
+
+### Pages and prerendering
+
+- `src/routes.ts` lists every page, its URL, and its title and description.
+- `npm run build` builds the browser bundle, then a server bundle of `src/entry-server.tsx`, then runs `scripts/prerender.mjs`.
+- The script writes one `index.html` per page with its title, description, canonical URL and link-preview tags, plus `404.html`, `llms.txt` (a plain-text summary for AI tools), `sitemap.xml` and `robots.txt`.
+- `public/og-image.png` is the link-preview image.
 
 ## Tests
 
@@ -45,6 +54,11 @@ The resources live on their own page, `#/resources`, with a link per tab (`#/res
 - no resource links to a repository that does not exist
 - every note is listed on the home page and opens on its own page with its links
 - the page loads with no console errors
+- every page's served HTML, before any JavaScript runs, has its own title, description, canonical URL, preview tags and full text
+- the profile and a note are readable with JavaScript turned off
+- old `#/` links redirect to their new page, and unknown addresses show the not-found page
+- `llms.txt`, `sitemap.xml`, `robots.txt` and the preview image are served
+- every page hydrates without console errors
 
 ## Deploy
 

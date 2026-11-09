@@ -3,32 +3,24 @@
  * a library of QA resources. Static: every word comes from files in src/data
  * and the resource components, so it needs no backend.
  */
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ArrowLeft, ArrowRight, ArrowUpRight, Github, Search } from 'lucide-react';
 import { contributions, profile, projects, skills, type Contribution } from './data/profile';
 import { notes, type Note } from './data/notes';
+import { pathFor, RESOURCE_TABS, type ResourceTab, type Route } from './routes';
 import { CheatSheets } from './components/resources/CheatSheets';
 import { Templates } from './components/resources/Templates';
 import { TestCases } from './components/resources/TestCases';
 import { TestScripts } from './components/resources/TestScripts';
 
 const NAV = [
-  { href: '#about', label: 'About' },
-  { href: '#projects', label: 'Projects' },
-  { href: '#open-source', label: 'Open source' },
-  { href: '#notes', label: 'Notes' },
-  { href: '#skills', label: 'Skills' },
-  { href: '#/resources', label: 'QA resources' },
+  { href: '/#about', label: 'About' },
+  { href: '/#projects', label: 'Projects' },
+  { href: '/#open-source', label: 'Open source' },
+  { href: '/#notes', label: 'Notes' },
+  { href: '/#skills', label: 'Skills' },
+  { href: '/resources/', label: 'QA resources' },
 ];
-
-const RESOURCE_TABS = [
-  { id: 'cheatsheets', label: 'Cheat sheets', blurb: 'Commands and patterns for Selenium, Playwright, Cypress, API, performance, and security testing.' },
-  { id: 'templates', label: 'Templates', blurb: 'Bug reports, triage, test plans, and framework starter code, ready to copy.' },
-  { id: 'testcases', label: 'Test cases', blurb: 'Manual test cases for well-known apps: steps, preconditions, and expected results.' },
-  { id: 'testscripts', label: 'Test scripts', blurb: 'Automation scripts in Selenium, Playwright, Cypress, REST Assured, and Appium.' },
-] as const;
-
-type ResourceTab = (typeof RESOURCE_TABS)[number]['id'];
 
 const STATUS: Record<Contribution['items'][number]['status'], string> = {
   merged: 'text-pass',
@@ -45,7 +37,7 @@ const TEST_RUN = [
   'resources › search narrows the cheat sheets',
   'profile › does not scroll sideways',
 ];
-const TEST_TOTAL = '40 passed';
+const TEST_TOTAL = '72 passed';
 
 const allItems = contributions.flatMap((c) => c.items);
 const landed = allItems.filter((i) => i.status !== 'in review').length;
@@ -64,38 +56,6 @@ function SectionTitle({ title, aside }: { title: string; aside?: string }) {
 /** PR number from a pull request URL, for the open-source log. */
 const prNumber = (url: string) => url.match(/\/pull\/(\d+)/)?.[1];
 
-type Route = { page: 'home' } | { page: 'resources'; tab: ResourceTab } | { page: 'note'; note: Note };
-
-/** Reads the route from the URL hash: `#/resources[/tab]` is the resources page, anything else is home. */
-function readRoute(): Route {
-  const noteMatch = window.location.hash.match(/^#\/notes\/([a-z0-9-]+)/);
-  const note = noteMatch && notes.find((n) => n.slug === noteMatch[1]);
-  if (note) return { page: 'note', note };
-  const m = window.location.hash.match(/^#\/resources(?:\/([a-z]+))?/);
-  if (!m) return { page: 'home' };
-  const tab = RESOURCE_TABS.find((t) => t.id === m[1])?.id ?? 'cheatsheets';
-  return { page: 'resources', tab };
-}
-
-/** Follows hash changes; on home, scrolls to the section the hash names. */
-function useRoute(): Route {
-  const [route, setRoute] = useState(readRoute);
-  useEffect(() => {
-    const onHash = () => setRoute(readRoute());
-    window.addEventListener('hashchange', onHash);
-    return () => window.removeEventListener('hashchange', onHash);
-  }, []);
-  useEffect(() => {
-    if (route.page !== 'home') {
-      window.scrollTo({ top: 0 });
-      return;
-    }
-    const id = window.location.hash.slice(1);
-    if (id) document.getElementById(id)?.scrollIntoView();
-  }, [route.page, route.page === 'note' ? route.note.slug : '']);
-  return route;
-}
-
 const backLink = 'inline-flex items-center gap-1.5 text-sm font-medium text-ink-2 underline decoration-rule hover:text-ink hover:decoration-ink';
 
 /** One field note on its own page. */
@@ -103,7 +63,7 @@ function NotePage({ note }: { note: Note }) {
   return (
     <main>
       <article className="mx-auto max-w-3xl px-4 pb-24 pt-10">
-        <a href="#notes" className={backLink}>
+        <a href="/#notes" className={backLink}>
           <ArrowLeft className="h-4 w-4" /> all notes
         </a>
         <header className="mt-10 border-b-2 border-signal pb-8">
@@ -154,7 +114,7 @@ function ResourcesPage({ tab }: { tab: ResourceTab }) {
   return (
     <main>
       <div className="mx-auto max-w-6xl px-4 pb-24 pt-10">
-        <a href="#about" className={backLink}>
+        <a href="/" className={backLink}>
           <ArrowLeft className="h-4 w-4" /> back to profile
         </a>
         <h1 className="display mt-10 text-5xl uppercase sm:text-7xl">QA resources</h1>
@@ -171,7 +131,7 @@ function ResourcesPage({ tab }: { tab: ResourceTab }) {
                 <a
                   key={id}
                   role="tab"
-                  href={`#/resources/${id}`}
+                  href={pathFor({ page: 'resources', tab: id })}
                   aria-selected={tab === id}
                   className={`whitespace-nowrap border-b-4 px-3 py-3 text-[15px] font-semibold transition-colors first:pl-0 sm:px-4 ${tab === id ? 'border-signal-deep text-ink' : 'border-transparent text-ink-3 hover:text-ink'}`}
                 >
@@ -241,15 +201,32 @@ function TestSheet() {
   );
 }
 
-export default function App() {
-  const route = useRoute();
+/** Shown for any address the site doesn't have. */
+function NotFoundPage() {
+  return (
+    <main>
+      <div className="mx-auto max-w-3xl px-4 pb-24 pt-16">
+        <h1 className="display text-5xl uppercase sm:text-7xl">Page not found</h1>
+        <p className="mt-6 text-lg text-ink-2">That address isn't on this site. It may have moved when the site switched to real page URLs.</p>
+        <p className="mt-8 flex flex-wrap gap-x-6 gap-y-2 font-medium">
+          <a href="/" className="underline decoration-signal-deep decoration-2 hover:decoration-ink">Home</a>
+          <a href="/resources/" className="underline decoration-signal-deep decoration-2 hover:decoration-ink">QA resources</a>
+          <a href="/#notes" className="underline decoration-signal-deep decoration-2 hover:decoration-ink">Notes</a>
+        </p>
+      </div>
+    </main>
+  );
+}
+
+/** The whole site; `route` says which page to render (from the URL in the browser, or from the prerender list at build time). */
+export default function App({ route }: { route: Route }) {
 
   return (
-    <div className="min-h-screen overflow-x-clip bg-paper font-sans text-ink antialiased">
+    <div data-page={route.page} className="min-h-screen overflow-x-clip bg-paper font-sans text-ink antialiased">
       <div className="lane" aria-hidden="true" />
       <header className="sticky top-0 z-50 border-b border-rule bg-paper">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-          <a href="#about" aria-label={`${profile.name}, home`} className="display shrink-0 text-xl uppercase">
+          <a href="/" aria-label={`${profile.name}, home`} className="display shrink-0 text-xl uppercase">
             <span className="text-signal">{profile.name[0]}</span>
             <span className="hidden sm:inline">{profile.name.slice(1)}</span>
           </a>
@@ -270,6 +247,8 @@ export default function App() {
         <ResourcesPage tab={route.tab} />
       ) : route.page === 'note' ? (
         <NotePage note={route.note} />
+      ) : route.page === 'not-found' ? (
+        <NotFoundPage />
       ) : (
       <main>
         {/* Hero: the yellow field */}
@@ -286,7 +265,7 @@ export default function App() {
                 <a href={profile.github} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-sm bg-signal px-5 py-3 font-semibold text-paper transition-colors hover:bg-ink">
                   <Github className="h-4 w-4" /> GitHub
                 </a>
-                <a href="#resources" className="inline-flex items-center gap-2 rounded-sm border-2 border-ink/60 px-5 py-2.5 font-semibold transition-colors hover:border-signal hover:text-signal">
+                <a href="/#resources" className="inline-flex items-center gap-2 rounded-sm border-2 border-ink/60 px-5 py-2.5 font-semibold transition-colors hover:border-signal hover:text-signal">
                   Browse QA resources <ArrowRight className="h-4 w-4" />
                 </a>
               </div>
@@ -360,7 +339,7 @@ export default function App() {
           <ul className="divide-y divide-rule">
             {notes.map((n) => (
               <li key={n.slug} className="rise">
-                <a href={`#/notes/${n.slug}`} className="group grid gap-2 py-6 first:pt-2 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)_auto] md:items-baseline md:gap-10">
+                <a href={pathFor({ page: 'note', note: n })} className="group grid gap-2 py-6 first:pt-2 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)_auto] md:items-baseline md:gap-10">
                   <h3 className="text-xl font-bold leading-snug decoration-signal-deep decoration-[3px] group-hover:underline">{n.title}</h3>
                   <p className="text-ink-2">{n.summary}</p>
                   <ArrowRight className="hidden h-5 w-5 text-ink-3 transition-transform group-hover:translate-x-1 group-hover:text-ink md:block" />
@@ -393,7 +372,7 @@ export default function App() {
             <ul className="grid border-y border-paper/30 lg:grid-cols-4">
               {RESOURCE_TABS.map(({ id, label, blurb }) => (
                 <li key={id} className="slide border-paper/30 [&+&]:border-t lg:[&+&]:border-l lg:[&+&]:border-t-0">
-                  <a href={`#/resources/${id}`} className="group flex h-full flex-col p-5 transition-colors hover:bg-paper hover:text-signal sm:p-6">
+                  <a href={pathFor({ page: 'resources', tab: id })} className="group flex h-full flex-col p-5 transition-colors hover:bg-paper hover:text-signal sm:p-6">
                     <h3 className="flex items-center justify-between gap-2 text-xl font-bold">
                       {label} <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </h3>
@@ -409,7 +388,8 @@ export default function App() {
 
       <footer className="border-t border-rule">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 text-sm text-ink-2 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} {profile.fullName}</p>
+          {/* The year is rendered at build time; a page loaded on the 1st of January may briefly disagree. */}
+          <p suppressHydrationWarning>© {new Date().getFullYear()} {profile.fullName}</p>
           <p>Built with React, tested with Playwright on every pull request.</p>
           <a href={profile.repository} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-medium underline decoration-rule hover:text-ink hover:decoration-ink">
             Source on GitHub <ArrowUpRight className="h-4 w-4" />

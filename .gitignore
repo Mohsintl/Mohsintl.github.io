@@ -9,3 +9,4 @@ test-results/
 .idea/
 .DS_Store
 *.log
+build-ssr/
