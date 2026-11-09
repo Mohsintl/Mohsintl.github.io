@@ -3,9 +3,9 @@ import react from '@vitejs/plugin-react-swc';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  // Relative asset paths, so the build works at /portfolio/ on
-  // GitHub Pages and at the root of a custom domain alike.
-  base: './',
+  // Pages live at real paths (/resources/templates/, /notes/<slug>/), so assets
+  // need absolute URLs. The site is served at the root of mohsintl.is-a.dev.
+  base: '/',
   plugins: [react(), tailwindcss()],
   build: { outDir: 'build' },
 });

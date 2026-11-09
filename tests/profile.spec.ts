@@ -28,18 +28,18 @@ test('lists every project and contribution from the profile data', async ({ page
 test('every section in the nav exists and is reachable', async ({ page, isMobile }) => {
   const nav = page.getByRole('navigation', { name: 'Sections' });
   for (const id of ['about', 'projects', 'open-source', 'notes', 'skills']) {
-    const link = nav.locator(`a[href="#${id}"]`);
+    const link = nav.locator(`a[href="/#${id}"]`);
     if (isMobile) await link.scrollIntoViewIfNeeded();
     await link.click();
-    await expect(page).toHaveURL(new RegExp(`#${id}$`));
+    await expect(page).toHaveURL(new RegExp(`/#${id}$`));
     await expect(page.locator(`#${id}`)).toBeInViewport();
   }
 });
 
 test('the resources teaser links to each resource tab', async ({ page }) => {
   const teaser = page.locator('#resources');
-  for (const tab of ['cheatsheets', 'templates', 'testcases', 'testscripts']) {
-    await expect(teaser.locator(`a[href="#/resources/${tab}"]`)).toBeVisible();
+  for (const path of ['/resources/', '/resources/templates/', '/resources/testcases/', '/resources/testscripts/']) {
+    await expect(teaser.locator(`a[href="${path}"]`)).toBeVisible();
   }
 });
 
