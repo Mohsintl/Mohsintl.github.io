@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { contributions, profile, projects } from '../src/data/profile';
+import { contributions, experience, profile, projects } from '../src/data/profile';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
@@ -27,7 +27,7 @@ test('lists every project and contribution from the profile data', async ({ page
 
 test('every section in the nav exists and is reachable', async ({ page, isMobile }) => {
   const nav = page.getByRole('navigation', { name: 'Sections' });
-  for (const id of ['about', 'projects', 'open-source', 'notes', 'skills']) {
+  for (const id of ['about', 'experience', 'projects', 'open-source', 'notes', 'skills', 'contact']) {
     const link = nav.locator(`a[href="/#${id}"]`);
     if (isMobile) await link.scrollIntoViewIfNeeded();
     await link.click();
@@ -68,4 +68,20 @@ test('keeps the hero text and terminal inside the viewport', async ({ page }) =>
 test('does not scroll sideways', async ({ page }) => {
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(0);
+});
+
+test('lists every role and links to contact channels', async ({ page }) => {
+  const section = page.locator('#experience');
+  for (const role of experience.flatMap((job) => job.roles)) {
+    await expect(section.getByRole('heading', { name: role.title, exact: true })).toBeVisible();
+    await expect(section.getByText(role.dates)).toBeVisible();
+  }
+  const contact = page.locator('#contact');
+  await expect(contact.getByRole('link', { name: /Email/ })).toHaveAttribute('href', `mailto:${profile.email}`);
+  await expect(contact.getByRole('link', { name: /LinkedIn/ })).toHaveAttribute('href', profile.linkedin);
+  await expect(page.locator('#about').getByRole('link', { name: 'LinkedIn' })).toHaveAttribute('href', profile.linkedin);
+});
+
+test('shows no phone number anywhere', async ({ page }) => {
+  await expect(page.locator('body')).not.toContainText(/\+?\d[\d\s-]{9,}\d/);
 });

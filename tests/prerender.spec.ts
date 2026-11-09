@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { contributions, profile, projects } from '../src/data/profile';
+import { contributions, experience, profile, projects } from '../src/data/profile';
 import { notes } from '../src/data/notes';
 import { ALL_ROUTES, pageMeta, pathFor, RESOURCE_TABS, SITE_URL } from '../src/routes';
 
@@ -37,7 +37,7 @@ test.describe('served HTML, before any JavaScript runs', () => {
 
   test('the home page carries the whole profile as text', async ({ request }) => {
     const text = textOf(await (await request.get('/')).text());
-    for (const expected of [profile.role, profile.tagline, ...projects.map((p) => p.name), ...contributions.flatMap((c) => c.items.map((i) => i.label)), ...notes.map((n) => n.title)]) {
+    for (const expected of [profile.role, profile.tagline, profile.email, ...experience.flatMap((j) => j.roles.map((r) => r.title)), ...projects.map((p) => p.name), ...contributions.flatMap((c) => c.items.map((i) => i.label)), ...notes.map((n) => n.title)]) {
       expect(text, expected).toContain(expected);
     }
   });
@@ -69,6 +69,8 @@ test.describe('served HTML, before any JavaScript runs', () => {
   test('llms.txt, sitemap.xml and robots.txt describe the site', async ({ request }) => {
     const llms = await (await request.get('/llms.txt')).text();
     expect(llms).toContain(`# ${profile.fullName}`);
+    expect(llms).toContain(profile.linkedin);
+    for (const role of experience.flatMap((j) => j.roles)) expect(llms).toContain(`- ${role.title}, ${role.dates}`);
     for (const item of contributions.flatMap((c) => c.items)) expect(llms).toContain(item.url);
 
     const sitemap = await (await request.get('/sitemap.xml')).text();

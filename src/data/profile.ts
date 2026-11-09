@@ -5,18 +5,60 @@
 
 export const profile = {
   name: 'Mohsin',
-  fullName: 'Tingri Lohar Mohammed Mohsin',
-  role: 'Senior Quality Engineer & SDET',
+  fullName: 'Mohsin Mohammed T L',
+  role: 'Senior Quality Engineer Analyst & SDET',
   tagline: 'I build reliable test automation, CI pipelines, and the tooling around them.',
   about: [
-    'Computer Science graduate working as a Senior Quality Engineer and SDET.',
+    'Computer Science graduate with about five years in quality engineering at Accenture, testing web, Android and iOS apps at scale.',
     'I write end-to-end suites in Playwright and agentic frameworks, wire them into CI as quality gates, and contribute fixes back to the open-source testing tools I use.',
   ],
   github: 'https://github.com/Mohsintl',
+  linkedin: 'https://www.linkedin.com/in/mohsintl',
+  email: 'tlmdmohsin782@gmail.com',
   githubHandle: 'Mohsintl',
   /** Where readers suggest a resource or fix: the site's own repository. */
   repository: 'https://github.com/Mohsintl/portfolio',
 };
+
+export type Role = { title: string; dates: string; points: string[] };
+
+/** Work history, newest role first. */
+export const experience: { company: string; context: string; roles: Role[] }[] = [
+  {
+    company: 'Accenture',
+    context: 'Client: a leading social media platform',
+    roles: [
+      {
+        title: 'Senior Quality Engineer Analyst',
+        dates: 'Dec 2025 – present',
+        points: [
+          'Functional quality for client-facing features on web, Android and iOS: regression planning, test-result validation and release readiness.',
+          'Help train three client AI agents: one turns application logs into test steps, one tries to reproduce issues on an emulator, and one proposes Jira labels for a reviewer to approve.',
+          'Evaluate the agents\' proposals with structured feedback (correct, incorrect and other categories) to improve the accuracy and ranking of later recommendations.',
+          'Mentor junior QA engineers, and use GitHub Copilot and AI-assisted workflows in test development.',
+        ],
+      },
+      {
+        title: 'Quality Engineer Analyst',
+        dates: 'Dec 2022 – Nov 2025',
+        points: [
+          'End-to-end functional testing of communication, calling and chat features on web, Android and iOS.',
+          'Maintained and ran regression suites, including two-cycle regression for web and mobile releases.',
+          'Defect triage, prioritisation, verification and SLA tracking with engineering teams.',
+        ],
+      },
+      {
+        title: 'Quality Engineer Associate',
+        dates: 'Oct 2021 – Nov 2022',
+        points: [
+          'Manual functional testing of web and mobile features on Android and iOS in an Agile team: regression cycles, defect verification and test-result validation.',
+        ],
+      },
+    ],
+  },
+];
+
+export const certifications = ['AWS Certified Cloud Practitioner'];
 
 export type Project = {
   name: string;

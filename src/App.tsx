@@ -4,8 +4,8 @@
  * and the resource components, so it needs no backend.
  */
 import { useState } from 'react';
-import { ArrowLeft, ArrowRight, ArrowUpRight, Github, Search } from 'lucide-react';
-import { contributions, profile, projects, skills, type Contribution } from './data/profile';
+import { ArrowLeft, ArrowRight, ArrowUpRight, Github, Linkedin, Mail, Search } from 'lucide-react';
+import { certifications, contributions, experience, profile, projects, skills, type Contribution } from './data/profile';
 import { notes, type Note } from './data/notes';
 import { pathFor, RESOURCE_TABS, type ResourceTab, type Route } from './routes';
 import { CheatSheets } from './components/resources/CheatSheets';
@@ -15,10 +15,12 @@ import { TestScripts } from './components/resources/TestScripts';
 
 const NAV = [
   { href: '/#about', label: 'About' },
+  { href: '/#experience', label: 'Experience' },
   { href: '/#projects', label: 'Projects' },
   { href: '/#open-source', label: 'Open source' },
   { href: '/#notes', label: 'Notes' },
   { href: '/#skills', label: 'Skills' },
+  { href: '/#contact', label: 'Contact' },
   { href: '/resources/', label: 'QA resources' },
 ];
 
@@ -37,7 +39,7 @@ const TEST_RUN = [
   'resources › search narrows the cheat sheets',
   'profile › does not scroll sideways',
 ];
-const TEST_TOTAL = '72 passed';
+const TEST_TOTAL = '76 passed';
 
 const allItems = contributions.flatMap((c) => c.items);
 const landed = allItems.filter((i) => i.status !== 'in review').length;
@@ -265,6 +267,9 @@ export default function App({ route }: { route: Route }) {
                 <a href={profile.github} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-sm bg-signal px-5 py-3 font-semibold text-paper transition-colors hover:bg-ink">
                   <Github className="h-4 w-4" /> GitHub
                 </a>
+                <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-sm border-2 border-ink/60 px-5 py-2.5 font-semibold transition-colors hover:border-signal hover:text-signal">
+                  <Linkedin className="h-4 w-4" /> LinkedIn
+                </a>
                 <a href="/#resources" className="inline-flex items-center gap-2 rounded-sm border-2 border-ink/60 px-5 py-2.5 font-semibold transition-colors hover:border-signal hover:text-signal">
                   Browse QA resources <ArrowRight className="h-4 w-4" />
                 </a>
@@ -272,6 +277,33 @@ export default function App({ route }: { route: Route }) {
             </div>
             <TestSheet />
           </div>
+        </section>
+
+        {/* Experience: roles, newest first */}
+        <section id="experience" className="mx-auto max-w-6xl scroll-mt-16 px-4 pt-24">
+          {experience.map((job) => (
+            <div key={job.company}>
+              <SectionTitle title="Experience" aside={`${job.company} · ${job.context}`} />
+              <ol className="divide-y divide-rule">
+                {job.roles.map((role) => (
+                  <li key={role.title} className="rise grid gap-3 py-7 first:pt-2 md:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] md:gap-10">
+                    <div>
+                      <h3 className="text-xl font-bold leading-tight">{role.title}</h3>
+                      <p className="tabular mt-1 text-ink-3">{job.company} · {role.dates}</p>
+                    </div>
+                    <ul className="space-y-2 text-[16px]">
+                      {role.points.map((point) => (
+                        <li key={point} className="flex gap-3">
+                          <span aria-hidden="true" className="mt-[0.6em] h-1.5 w-3 shrink-0 bg-signal-deep" />
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ))}
         </section>
 
         {/* Projects: a ledger, one row per project */}
@@ -359,6 +391,10 @@ export default function App({ route }: { route: Route }) {
                 <dd className="text-lg">{s.items.join(', ')}</dd>
               </div>
             ))}
+            <div className="rise grid gap-1 py-4 sm:grid-cols-[14rem_minmax(0,1fr)] sm:gap-10">
+              <dt className="font-semibold text-ink-2">Certifications</dt>
+              <dd className="text-lg">{certifications.join(', ')}</dd>
+            </div>
           </dl>
         </section>
 
@@ -382,6 +418,25 @@ export default function App({ route }: { route: Route }) {
               ))}
             </ul>
           </div>
+        </section>
+
+        {/* Contact */}
+        <section id="contact" className="mx-auto max-w-6xl scroll-mt-16 px-4 py-24">
+          <SectionTitle title="Contact" aside="Open to SDET and test automation roles." />
+          <ul className="grid gap-px bg-rule sm:grid-cols-3">
+            {[
+              { href: `mailto:${profile.email}`, label: 'Email', value: profile.email, Icon: Mail, external: false },
+              { href: profile.linkedin, label: 'LinkedIn', value: profile.linkedin.replace('https://www.', ''), Icon: Linkedin, external: true },
+              { href: profile.github, label: 'GitHub', value: profile.github.replace('https://', ''), Icon: Github, external: true },
+            ].map(({ href, label, value, Icon, external }) => (
+              <li key={label} className="bg-paper">
+                <a href={href} {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})} className="group flex h-full flex-col gap-2 p-5 transition-colors hover:bg-sheet sm:p-6">
+                  <span className="flex items-center gap-2 text-sm font-semibold text-ink-3"><Icon className="h-4 w-4" /> {label}</span>
+                  <span className="text-lg font-medium [overflow-wrap:anywhere] decoration-signal-deep decoration-2 group-hover:underline">{value}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
         </section>
       </main>
       )}
