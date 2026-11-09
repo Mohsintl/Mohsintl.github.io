@@ -60,7 +60,7 @@ for (const route of ALL_ROUTES) {
   pages++;
 }
 
-const { profile, projects, contributions, skills, notes } = site;
+const { profile, experience, certifications, projects, contributions, skills, notes } = site;
 const live = ALL_ROUTES.filter((r) => r.page !== 'not-found');
 
 const llms = [
@@ -72,7 +72,17 @@ const llms = [
   '',
   `- Site: ${SITE_URL}/`,
   `- GitHub: ${profile.github}`,
+  `- LinkedIn: ${profile.linkedin}`,
+  `- Email: ${profile.email}`,
   '',
+  '## Experience',
+  '',
+  ...experience.flatMap((job) => [
+    `${job.company} (${job.context})`,
+    '',
+    ...job.roles.flatMap((role) => [`- ${role.title}, ${role.dates}`, ...role.points.map((point) => `  - ${point}`)]),
+    '',
+  ]),
   '## Projects',
   '',
   ...projects.map((p) => `- [${p.name}](${p.url}): ${p.summary} (${p.tech.join(', ')})`),
@@ -88,6 +98,7 @@ const llms = [
   '## Skills',
   '',
   ...skills.map((s) => `- ${s.group}: ${s.items.join(', ')}`),
+  `- Certifications: ${certifications.join(', ')}`,
   '',
   '## QA resources',
   '',
