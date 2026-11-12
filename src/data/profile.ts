@@ -84,7 +84,11 @@ export const projects: Project[] = [
     name: 'e2e-automation-exercise',
     url: 'https://github.com/Mohsintl/e2e-automation-exercise',
     summary: 'The same journeys ported to the agentic e2e framework, to compare it with Playwright.',
-    highlights: ['23 tests with smoke and regression workflows', 'Ad-network blocking for deterministic runs'],
+    highlights: [
+      'Featured as a community example on e2e',
+      '23 tests with smoke and regression workflows',
+      'Ad-network blocking for deterministic runs',
+    ],
     tech: ['e2e', 'TypeScript', 'GitHub Actions'],
   },
   {
@@ -123,6 +127,7 @@ export const contributions: Contribution[] = [
       { label: 'Fix date patterns in the replay cache', url: 'https://github.com/e2e-inc/e2e/pull/1511', status: 'merged' },
       { label: 'JUnit failure screenshots as GitLab attachments', url: 'https://github.com/e2e-inc/e2e/pull/1526', status: 'merged' },
       { label: 'OmaDeck added as a community example', url: 'https://github.com/e2e-inc/e2e/pull/1707', status: 'merged' },
+      { label: 'Automation Exercise added as a community example', url: 'https://github.com/e2e-inc/e2e/pull/1512', status: 'merged' },
     ],
   },
   {
