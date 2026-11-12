@@ -88,11 +88,15 @@ export const projects: Project[] = [
     tech: ['e2e', 'TypeScript', 'GitHub Actions'],
   },
   {
-    name: 'Omadeck',
+    name: 'OmaDeck',
     url: 'https://github.com/Mohsintl/omadeck',
-    summary: 'A phone-as-remote PWA and AI voice companion for Hyprland Linux.',
-    highlights: ['400+ tests in CI on Python 3.11 to 3.13', 'Token and PIN authentication with rate limiting'],
-    tech: ['Python', 'PWA', 'WebSockets', 'pytest'],
+    summary: 'Turns a phone into a Stream Deck and voice remote for Omarchy and Hyprland, served as a PWA from a small Python bridge.',
+    highlights: [
+      'Phone-deck end-to-end tests with a fake desktop, featured as a community example on e2e',
+      '400+ unit tests and the e2e suite in CI on every pull request',
+      'Token and PIN authentication with rate limiting',
+    ],
+    tech: ['Python', 'PWA', 'e2e', 'GitHub Actions'],
   },
   {
     name: 'AI Conversation Control',
@@ -113,11 +117,12 @@ export type Contribution = {
 export const contributions: Contribution[] = [
   {
     project: 'e2e',
-    projectUrl: 'https://github.com/tester-army/e2e',
+    projectUrl: 'https://github.com/e2e-inc/e2e',
     about: 'Agentic end-to-end testing framework',
     items: [
-      { label: 'Fix date patterns in the replay cache', url: 'https://github.com/tester-army/e2e/pull/1511', status: 'merged' },
-      { label: 'JUnit failure screenshots as GitLab attachments', url: 'https://github.com/tester-army/e2e/pull/1526', status: 'merged' },
+      { label: 'Fix date patterns in the replay cache', url: 'https://github.com/e2e-inc/e2e/pull/1511', status: 'merged' },
+      { label: 'JUnit failure screenshots as GitLab attachments', url: 'https://github.com/e2e-inc/e2e/pull/1526', status: 'merged' },
+      { label: 'OmaDeck added as a community example', url: 'https://github.com/e2e-inc/e2e/pull/1707', status: 'merged' },
     ],
   },
   {
