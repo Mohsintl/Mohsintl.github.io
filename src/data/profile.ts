@@ -126,6 +126,14 @@ export const contributions: Contribution[] = [
     ],
   },
   {
+    project: 'Selenium',
+    projectUrl: 'https://github.com/SeleniumHQ/selenium',
+    about: 'Browser automation framework',
+    items: [
+      { label: 'Fix Select escaping of trailing double quotes (Python)', url: 'https://github.com/SeleniumHQ/selenium/pull/18292', status: 'merged' },
+    ],
+  },
+  {
     project: 'test-reporter',
     projectUrl: 'https://github.com/dorny/test-reporter',
     about: 'Test results in GitHub Actions',
