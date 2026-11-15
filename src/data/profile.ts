@@ -150,6 +150,14 @@ export const contributions: Contribution[] = [
     ],
   },
   {
+    project: 'brag',
+    projectUrl: 'https://github.com/latent-spaces/brag',
+    about: 'Launch videos for the project you just built',
+    items: [
+      { label: 'CI that runs the skill-sync and docs checks on every pull request', url: 'https://github.com/latent-spaces/brag/pull/72', status: 'merged' },
+    ],
+  },
+  {
     project: 'test-reporter',
     projectUrl: 'https://github.com/dorny/test-reporter',
     about: 'Test results in GitHub Actions',
