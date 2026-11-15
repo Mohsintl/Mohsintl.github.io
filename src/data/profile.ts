@@ -97,7 +97,7 @@ export const projects: Project[] = [
     summary: 'Turns a phone into a Stream Deck and voice remote for Omarchy and Hyprland, served as a PWA from a small Python bridge.',
     highlights: [
       'Phone-deck end-to-end tests with a fake desktop, featured as a community example on e2e',
-      '400+ unit tests and the e2e suite in CI on every pull request',
+      '500+ unit tests and the e2e suite in CI on every pull request',
       'Token and PIN authentication with rate limiting',
     ],
     tech: ['Python', 'PWA', 'e2e', 'GitHub Actions'],
@@ -136,6 +136,17 @@ export const contributions: Contribution[] = [
     about: 'Browser automation framework',
     items: [
       { label: 'Fix Select escaping of trailing double quotes (Python)', url: 'https://github.com/SeleniumHQ/selenium/pull/18292', status: 'merged' },
+      { label: 'Find Select options by value with XPath (Python)', url: 'https://github.com/SeleniumHQ/selenium/pull/18305', status: 'merged' },
+    ],
+  },
+  {
+    project: 'omarchy-widgets',
+    projectUrl: 'https://github.com/SimonSchubert/omarchy-widgets',
+    about: 'Desktop widgets for Omarchy',
+    items: [
+      { label: 'Pressure widget: free RAM the way the kernel sees it', url: 'https://github.com/SimonSchubert/omarchy-widgets/pull/463', status: 'merged' },
+      { label: 'Pressure 1.2: poll every 30 s instead of every 2', url: 'https://github.com/SimonSchubert/omarchy-widgets/pull/471', status: 'merged' },
+      { label: 'Capture widget: dictate a thought and save it to ~/inbox.md', url: 'https://github.com/SimonSchubert/omarchy-widgets/pull/474', status: 'merged' },
     ],
   },
   {
