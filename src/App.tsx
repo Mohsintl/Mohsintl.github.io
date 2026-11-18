@@ -5,7 +5,7 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, ArrowUpRight, Github, Linkedin, Mail, Menu, Search, X } from 'lucide-react';
-import { certifications, contributions, experience, profile, projects, skills, type Contribution } from './data/profile';
+import { certifications, contributionGroups, contributions, experience, profile, projects, skills, type Contribution } from './data/profile';
 import { notes, type Note } from './data/notes';
 import { pathFor, RESOURCE_TABS, type ResourceTab, type Route } from './routes';
 import { CheatSheets } from './components/resources/CheatSheets';
@@ -44,6 +44,8 @@ const TEST_TOTAL = '98 passed';
 const allItems = contributions.flatMap((c) => c.items);
 const landed = allItems.filter((i) => i.status !== 'in review').length;
 const inReview = allItems.length - landed;
+/** Distinct repositories: e2e shows up under both testing and community examples. */
+const projectCount = new Set(allItems.map((i) => i.url.split('/pull/')[0])).size;
 
 /** Section heading: the heading carries itself, with an optional line of context beside it. */
 function SectionTitle({ title, aside }: { title: string; aside?: string }) {
@@ -349,7 +351,7 @@ export default function App({ route }: { route: Route }) {
 
         {/* Projects: a ledger, one row per project */}
         <section id="projects" className="mx-auto max-w-6xl scroll-mt-16 px-4 pt-24">
-          <SectionTitle title="Projects" aside="Test suites and tools I built and maintain." />
+          <SectionTitle title="My projects" aside="Test suites and tools I built and maintain." />
           <ol className="divide-y divide-rule">
             {projects.map((project) => (
               <li key={project.name} className="rise group grid gap-4 py-8 first:pt-2 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:gap-10">
@@ -379,15 +381,21 @@ export default function App({ route }: { route: Route }) {
         <section id="open-source" className="mx-auto max-w-6xl scroll-mt-16 px-4 pt-24">
           <SectionTitle
             title="Open source"
-            aside={`${landed} pull requests merged or co-authored across ${contributions.length} projects, ${inReview} more in review.`}
+            aside={`${landed} pull requests merged or co-authored across ${projectCount} projects, ${inReview} more in review.`}
           />
+          {contributionGroups.map((group) => (
+          <div key={group.id} className="mt-12 first-of-type:mt-0">
+          <div className="mb-2 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+            <h3 className="display text-2xl uppercase text-signal">{group.title}</h3>
+            <p className="text-ink-3">{group.about}</p>
+          </div>
           <div className="divide-y divide-rule">
-            {contributions.map((c) => (
+            {contributions.filter((c) => c.group === group.id).map((c) => (
               <div key={c.project} className="rise grid gap-3 py-6 first:pt-2 md:grid-cols-[minmax(0,3fr)_minmax(0,8fr)] md:gap-10">
                 <div>
-                  <h3 className="text-xl font-bold">
+                  <h4 className="text-xl font-bold">
                     <a href={c.projectUrl} target="_blank" rel="noopener noreferrer" className="decoration-signal-deep decoration-[3px] hover:underline">{c.project}</a>
-                  </h3>
+                  </h4>
                   <p className="text-ink-2">{c.about}</p>
                 </div>
                 <ul className="space-y-3">
@@ -404,6 +412,8 @@ export default function App({ route }: { route: Route }) {
               </div>
             ))}
           </div>
+          </div>
+          ))}
         </section>
 
         {/* Notes: a reading list */}
