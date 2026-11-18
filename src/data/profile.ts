@@ -7,7 +7,7 @@ export const profile = {
   name: 'Mohsin',
   fullName: 'Mohsin Mohammed T L',
   role: 'Senior Quality Engineer Analyst & SDET',
-  tagline: 'I build reliable test automation, CI pipelines, and the tooling around them.',
+  tagline: 'I break software before your users do, then automate the test so the bug never comes back.',
   about: [
     'Computer Science graduate with about five years in quality engineering at Accenture, testing web, Android and iOS apps at scale.',
     'I write end-to-end suites in Playwright and agentic frameworks, wire them into CI as quality gates, and contribute fixes back to the open-source testing tools I use.',
@@ -112,52 +112,64 @@ export const projects: Project[] = [
 ];
 
 export type Contribution = {
+  /** Which part of the Open source section it is listed in. */
+  group: 'tests' | 'tools' | 'examples' | 'other';
   project: string;
   projectUrl: string;
   about: string;
   items: { label: string; url: string; status: 'merged' | 'in review' | 'co-authored' }[];
 };
 
+export const contributionGroups: { id: Contribution['group']; title: string; about: string }[] = [
+  { id: 'tests', title: 'Tests for other products', about: 'End-to-end tests I wrote for open-source products, so their bugs get caught in CI.' },
+  { id: 'tools', title: 'Fixes in testing tools', about: 'Bugs I fixed inside the tools testers rely on.' },
+  { id: 'examples', title: 'Community examples', about: 'Test suites a testing project shows its users as reference examples.' },
+  { id: 'other', title: 'Other open source', about: 'Widgets, tooling and fixes outside testing.' },
+];
+
 export const contributions: Contribution[] = [
   {
+    group: 'tools',
     project: 'e2e',
     projectUrl: 'https://github.com/e2e-inc/e2e',
-    about: 'Agentic end-to-end testing framework',
+    about: 'Next-generation agentic e2e framework for web and mobile',
     items: [
       { label: 'Fix date patterns in the replay cache', url: 'https://github.com/e2e-inc/e2e/pull/1511', status: 'merged' },
       { label: 'JUnit failure screenshots as GitLab attachments', url: 'https://github.com/e2e-inc/e2e/pull/1526', status: 'merged' },
-      { label: 'OmaDeck added as a community example', url: 'https://github.com/e2e-inc/e2e/pull/1707', status: 'merged' },
-      { label: 'Automation Exercise added as a community example', url: 'https://github.com/e2e-inc/e2e/pull/1512', status: 'merged' },
     ],
   },
   {
+    group: 'tests',
+    project: 'Eclipse Open VSX',
+    projectUrl: 'https://github.com/eclipse-openvsx/openvsx',
+    about: 'Extension registry behind VS Code forks',
+    items: [
+      { label: 'Playwright test: switch an extension to an older version and back', url: 'https://github.com/eclipse-openvsx/openvsx/pull/2462', status: 'merged' },
+      { label: 'Playwright tests: changelog and reviews tabs, and the namespace link', url: 'https://github.com/eclipse-openvsx/openvsx/pull/2463', status: 'in review' },
+    ],
+  },
+  {
+    group: 'tools',
     project: 'Selenium',
     projectUrl: 'https://github.com/SeleniumHQ/selenium',
     about: 'Browser automation framework',
     items: [
       { label: 'Fix Select escaping of trailing double quotes (Python)', url: 'https://github.com/SeleniumHQ/selenium/pull/18292', status: 'merged' },
       { label: 'Find Select options by value with XPath (Python)', url: 'https://github.com/SeleniumHQ/selenium/pull/18305', status: 'merged' },
+      { label: 'Keep waiting when an element goes stale in three expected conditions (Python)', url: 'https://github.com/SeleniumHQ/selenium/pull/18319', status: 'in review' },
     ],
   },
   {
-    project: 'omarchy-widgets',
-    projectUrl: 'https://github.com/SimonSchubert/omarchy-widgets',
-    about: 'Desktop widgets for Omarchy',
+    group: 'tests',
+    project: 'Tabularis',
+    projectUrl: 'https://github.com/TabularisDB/tabularis',
+    about: 'Database client for desktop and the browser',
     items: [
-      { label: 'Pressure widget: free RAM the way the kernel sees it', url: 'https://github.com/SimonSchubert/omarchy-widgets/pull/463', status: 'merged' },
-      { label: 'Pressure 1.2: poll every 30 s instead of every 2', url: 'https://github.com/SimonSchubert/omarchy-widgets/pull/471', status: 'merged' },
-      { label: 'Capture widget: dictate a thought and save it to ~/inbox.md', url: 'https://github.com/SimonSchubert/omarchy-widgets/pull/474', status: 'merged' },
+      { label: 'Phone and tablet Playwright projects with a responsive smoke spec', url: 'https://github.com/TabularisDB/tabularis/pull/1612', status: 'in review' },
     ],
   },
   {
-    project: 'brag',
-    projectUrl: 'https://github.com/latent-spaces/brag',
-    about: 'Launch videos for the project you just built',
-    items: [
-      { label: 'CI that runs the skill-sync and docs checks on every pull request', url: 'https://github.com/latent-spaces/brag/pull/72', status: 'merged' },
-    ],
-  },
-  {
+    group: 'tools',
     project: 'test-reporter',
     projectUrl: 'https://github.com/dorny/test-reporter',
     about: 'Test results in GitHub Actions',
@@ -166,6 +178,38 @@ export const contributions: Contribution[] = [
     ],
   },
   {
+    group: 'examples',
+    project: 'e2e examples',
+    projectUrl: 'https://e2e.com/examples/omadeck',
+    about: 'Community examples on the e2e site',
+    items: [
+      { label: 'OmaDeck added as a community example', url: 'https://github.com/e2e-inc/e2e/pull/1707', status: 'merged' },
+      { label: 'Automation Exercise added as a community example', url: 'https://github.com/e2e-inc/e2e/pull/1512', status: 'merged' },
+    ],
+  },
+  {
+    group: 'examples',
+    project: 'Selenium docs',
+    projectUrl: 'https://github.com/SeleniumHQ/seleniumhq.github.io',
+    about: 'The documentation on selenium.dev',
+    items: [
+      { label: 'Tested Java and Python examples for the Listeners page', url: 'https://github.com/SeleniumHQ/seleniumhq.github.io/pull/3000', status: 'in review' },
+    ],
+  },
+  {
+    group: 'other',
+    project: 'omarchy-widgets',
+    projectUrl: 'https://github.com/SimonSchubert/omarchy-widgets',
+    about: 'Desktop widgets for Omarchy',
+    items: [
+      { label: 'Pressure widget: free RAM the way the kernel sees it', url: 'https://github.com/SimonSchubert/omarchy-widgets/pull/463', status: 'merged' },
+      { label: 'Pressure 1.2: poll every 30 s instead of every 2', url: 'https://github.com/SimonSchubert/omarchy-widgets/pull/471', status: 'merged' },
+      { label: 'Capture widget: dictate a thought and save it to ~/inbox.md', url: 'https://github.com/SimonSchubert/omarchy-widgets/pull/474', status: 'merged' },
+      { label: 'Capture 1.1: a look that says what it is doing', url: 'https://github.com/SimonSchubert/omarchy-widgets/pull/488', status: 'merged' },
+    ],
+  },
+  {
+    group: 'other',
     project: 'OpenRig',
     projectUrl: 'https://github.com/mvschwarz/openrig',
     about: 'Multi-agent orchestration CLI and daemon',
@@ -176,6 +220,25 @@ export const contributions: Contribution[] = [
     ],
   },
   {
+    group: 'other',
+    project: 'brag',
+    projectUrl: 'https://github.com/latent-spaces/brag',
+    about: 'Launch videos for the project you just built',
+    items: [
+      { label: 'CI that runs the skill-sync and docs checks on every pull request', url: 'https://github.com/latent-spaces/brag/pull/72', status: 'merged' },
+    ],
+  },
+  {
+    group: 'other',
+    project: 'awesome-omarchy',
+    projectUrl: 'https://github.com/aorumbayev/awesome-omarchy',
+    about: 'Curated list of Omarchy tools',
+    items: [
+      { label: 'OmaDeck added to the list', url: 'https://github.com/aorumbayev/awesome-omarchy/pull/93', status: 'merged' },
+    ],
+  },
+  {
+    group: 'other',
     project: 'Sellbird',
     projectUrl: 'https://github.com/ethanplusai/sellbird',
     about: 'Sales reply agent',
@@ -184,6 +247,17 @@ export const contributions: Contribution[] = [
     ],
   },
   {
+    group: 'other',
+    project: 'omalauncher',
+    projectUrl: 'https://github.com/SimonSchubert/omalauncher',
+    about: 'Android launcher in the Omarchy style',
+    items: [
+      { label: 'Galaxy Z Fold inner screen counts as phone-shaped', url: 'https://github.com/SimonSchubert/omalauncher/pull/281', status: 'in review' },
+      { label: 'Keep panels open when their list is scrolled past its end', url: 'https://github.com/SimonSchubert/omalauncher/pull/282', status: 'in review' },
+    ],
+  },
+  {
+    group: 'other',
     project: 'Paperclip',
     projectUrl: 'https://github.com/paperclipai/paperclip',
     about: 'Agent management platform',
@@ -195,6 +269,6 @@ export const contributions: Contribution[] = [
 
 export const skills: { group: string; items: string[] }[] = [
   { group: 'Test automation', items: ['Playwright', 'e2e (agentic)', 'Selenium', 'Vitest', 'pytest', 'API testing'] },
-  { group: 'Languages', items: ['TypeScript', 'JavaScript', 'Python'] },
+  { group: 'Languages', items: ['TypeScript', 'JavaScript', 'Python', 'Java'] },
   { group: 'CI and tooling', items: ['GitHub Actions', 'Docker', 'Node.js', 'Git'] },
 ];
