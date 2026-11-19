@@ -145,7 +145,19 @@ export const contributions: Contribution[] = [
     about: 'Extension registry behind VS Code forks',
     items: [
       { label: 'Playwright test: switch an extension to an older version and back', url: 'https://github.com/eclipse-openvsx/openvsx/pull/2462', status: 'merged' },
-      { label: 'Playwright tests: changelog and reviews tabs, and the namespace link', url: 'https://github.com/eclipse-openvsx/openvsx/pull/2463', status: 'in review' },
+      { label: 'Playwright tests: changelog and reviews tabs, and the namespace link', url: 'https://github.com/eclipse-openvsx/openvsx/pull/2463', status: 'merged' },
+    ],
+  },
+  {
+    group: 'tests',
+    project: 'Element',
+    projectUrl: 'https://github.com/element-hq/element-web',
+    about: 'Matrix chat client for the web and desktop',
+    items: [
+      { label: 'Fix flaky emoji verification between two users', url: 'https://github.com/element-hq/element-web/pull/35934', status: 'merged' },
+      { label: 'Dismiss the service worker toast that broke four tests on Firefox and WebKit', url: 'https://github.com/element-hq/element-web/pull/35936', status: 'merged' },
+      { label: 'Fix the flaky profile picture test', url: 'https://github.com/element-hq/element-web/pull/35935', status: 'in review' },
+      { label: 'Wait for the leave to sync before reopening a 1:1 chat', url: 'https://github.com/element-hq/element-web/pull/35941', status: 'in review' },
     ],
   },
   {
