@@ -156,7 +156,7 @@ export const contributions: Contribution[] = [
     items: [
       { label: 'Fix flaky emoji verification between two users', url: 'https://github.com/element-hq/element-web/pull/35934', status: 'merged' },
       { label: 'Dismiss the service worker toast that broke four tests on Firefox and WebKit', url: 'https://github.com/element-hq/element-web/pull/35936', status: 'merged' },
-      { label: 'Fix the flaky profile picture test', url: 'https://github.com/element-hq/element-web/pull/35935', status: 'in review' },
+      { label: 'Fix the flaky profile picture test', url: 'https://github.com/element-hq/element-web/pull/35935', status: 'merged' },
       { label: 'Wait for the leave to sync before reopening a 1:1 chat', url: 'https://github.com/element-hq/element-web/pull/35941', status: 'in review' },
     ],
   },
