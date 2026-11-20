@@ -6,7 +6,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, ArrowUpRight, Github, Linkedin, Mail, Menu, Search, X } from 'lucide-react';
 import { certifications, contributionGroups, contributions, experience, profile, projects, skills, type Contribution } from './data/profile';
-import { notes, type Note } from './data/notes';
+import { fieldNotes, prNotes, type Note } from './data/notes';
 import { pathFor, RESOURCE_TABS, type ResourceTab, type Route } from './routes';
 import { CheatSheets } from './components/resources/CheatSheets';
 import { Templates } from './components/resources/Templates';
@@ -39,7 +39,7 @@ const TEST_RUN = [
   'resources › search narrows the cheat sheets',
   'profile › does not scroll sideways',
 ];
-const TEST_TOTAL = '98 passed';
+const TEST_TOTAL = '140 passed';
 
 const allItems = contributions.flatMap((c) => c.items);
 const landed = allItems.filter((i) => i.status !== 'in review').length;
@@ -72,6 +72,7 @@ function NotePage({ note }: { note: Note }) {
         </a>
         <header className="mt-10 border-b-2 border-signal pb-8">
           <p className="tabular text-sm text-ink-3">
+            {note.pr && <>PR note · {note.pr.repo}#{note.pr.number} · merged </>}
             <time dateTime={note.date}>{note.date}</time> · {note.tags.join(' · ')}
           </p>
           <h1 className="display mt-4 text-4xl sm:text-6xl">{note.title}</h1>
@@ -419,17 +420,31 @@ export default function App({ route }: { route: Route }) {
         {/* Notes: a reading list */}
         <section id="notes" className="mx-auto max-w-6xl scroll-mt-16 px-4 pt-24">
           <SectionTitle title="Notes" aside="Short write-ups of what I learned doing the work." />
-          <ul className="divide-y divide-rule">
-            {notes.map((n) => (
-              <li key={n.slug} className="rise">
-                <a href={pathFor({ page: 'note', note: n })} className="group grid gap-2 py-6 first:pt-2 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)_auto] md:items-baseline md:gap-10">
-                  <h3 className="text-xl font-bold leading-snug decoration-signal-deep decoration-[3px] group-hover:underline">{n.title}</h3>
-                  <p className="text-ink-2">{n.summary}</p>
-                  <ArrowRight className="hidden h-5 w-5 text-ink-3 transition-transform group-hover:translate-x-1 group-hover:text-ink md:block" />
-                </a>
-              </li>
-            ))}
-          </ul>
+          {[
+            { title: 'Field notes', about: 'Things I worked out on my own projects.', list: fieldNotes },
+            { title: 'PR notes', about: 'One merged pull request each: the problem, what I did, what I learned.', list: prNotes },
+          ].map((group) => (
+            <div key={group.title} className="mt-12 first-of-type:mt-0">
+              <div className="mb-2 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+                <h3 className="display text-2xl uppercase text-signal">{group.title}</h3>
+                <p className="text-ink-3">{group.about}</p>
+              </div>
+              <ul className="divide-y divide-rule">
+                {group.list.map((n) => (
+                  <li key={n.slug} className="rise">
+                    <a href={pathFor({ page: 'note', note: n })} className="group grid gap-2 py-6 first:pt-2 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)_auto] md:items-baseline md:gap-10">
+                      <h4 className="text-xl font-bold leading-snug decoration-signal-deep decoration-[3px] group-hover:underline">
+                        {n.pr && <span className="tabular mr-2 font-mono text-sm font-medium text-ink-3">#{n.pr.number}</span>}
+                        {n.title}
+                      </h4>
+                      <p className="text-ink-2">{n.summary}</p>
+                      <ArrowRight className="hidden h-5 w-5 text-ink-3 transition-transform group-hover:translate-x-1 group-hover:text-ink md:block" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </section>
 
         {/* Skills: a spec sheet */}
