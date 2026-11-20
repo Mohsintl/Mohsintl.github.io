@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { notes } from '../src/data/notes';
+import { notes, prNotes } from '../src/data/notes';
 
 test('the home page lists every note', async ({ page }) => {
   await page.goto('/');
@@ -18,6 +18,16 @@ test('each note opens on its own page with its links', async ({ page }) => {
     }
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow, note.slug).toBeLessThanOrEqual(0);
+  }
+});
+
+test('each PR note has the problem, what I did and what I learned, and links its PR', async ({ page }) => {
+  expect(prNotes.length).toBeGreaterThan(0);
+  for (const note of prNotes) {
+    await page.goto(`/notes/${note.slug}/`);
+    const sections = page.getByRole('heading', { level: 2 });
+    await expect(sections.filter({ hasText: /^(The problem|What I did|What I learned)$/ })).toHaveText(['The problem', 'What I did', 'What I learned']);
+    await expect(page.getByRole('link', { name: `${note.pr!.repo}#${note.pr!.number}` })).toHaveAttribute('href', `https://github.com/${note.pr!.repo}/pull/${note.pr!.number}`);
   }
 });
 
