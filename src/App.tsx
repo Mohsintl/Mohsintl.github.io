@@ -39,7 +39,7 @@ const TEST_RUN = [
   'resources › search narrows the cheat sheets',
   'profile › does not scroll sideways',
 ];
-const TEST_TOTAL = '140 passed';
+const TEST_TOTAL = '142 passed';
 
 const allItems = contributions.flatMap((c) => c.items);
 const landed = allItems.filter((i) => i.status !== 'in review').length;
@@ -180,9 +180,9 @@ function TestSheet() {
         <span className="font-semibold">This site's own test run</span>
         <span className="text-ink-3">desktop + mobile</span>
       </figcaption>
-      <div className="px-5 py-4">
+      <div className="px-5 py-3 sm:py-4">
         <p className="font-mono text-[13px] text-ink-2">$ npx playwright test</p>
-        <ol className="mt-3 space-y-2.5">
+        <ol className="mt-3 space-y-2 sm:space-y-2.5">
           {TEST_RUN.map((line, i) => {
             const delay = `${start + i * step}s`;
             return (
@@ -299,12 +299,19 @@ export default function App({ route }: { route: Route }) {
       <main>
         {/* Hero: the yellow field */}
         <section id="about" className="scroll-mt-16 border-b border-rule">
-          <div className="mx-auto grid max-w-6xl items-end gap-12 px-4 pb-16 pt-14 sm:pt-20 lg:grid-cols-[1.25fr_1fr] lg:pb-20 [&>*]:min-w-0">
-            <div className="hero-name">
+          {/* Phones stack name, test sheet, then the details, so the sheet is on the first screen.
+              From lg the sheet sits in its own column beside both text blocks. */}
+          <div className="mx-auto grid max-w-6xl gap-8 px-4 pb-16 pt-10 sm:gap-12 sm:pt-20 lg:grid-cols-[1.25fr_1fr] lg:gap-x-12 lg:gap-y-0 lg:pb-20 [&>*]:min-w-0">
+            <div className="hero-name lg:col-start-1 lg:row-start-1">
               <p className="text-lg font-semibold text-signal">{profile.role}</p>
               <h1 className="display mt-4 text-6xl uppercase sm:text-8xl">Hi, I'm {profile.name}</h1>
-              <p className="mt-8 max-w-xl text-xl font-medium leading-snug sm:text-2xl">{profile.tagline}</p>
-              <div className="mt-5 max-w-xl space-y-2 text-[17px] leading-relaxed text-ink-2">
+              <p className="mt-6 max-w-xl text-xl font-medium leading-snug sm:mt-8 sm:text-2xl">{profile.tagline}</p>
+            </div>
+            <div className="lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-end">
+              <TestSheet />
+            </div>
+            <div className="hero-name lg:col-start-1 lg:row-start-2">
+              <div className="max-w-xl space-y-2 text-[17px] leading-relaxed text-ink-2 lg:mt-5">
                 {profile.about.map((line) => <p key={line}>{line}</p>)}
               </div>
               <div className="mt-9 flex flex-wrap gap-3">
@@ -319,7 +326,6 @@ export default function App({ route }: { route: Route }) {
                 </a>
               </div>
             </div>
-            <TestSheet />
           </div>
         </section>
 

@@ -97,3 +97,12 @@ test.describe('menu on narrow screens', () => {
     await context.close();
   });
 });
+
+test('the hero test sheet is on the first screen, with its result', async ({ page }) => {
+  await page.goto('/');
+  const sheet = page.getByRole('figure').filter({ hasText: "This site's own test run" });
+  await expect(sheet.getByText(/\d+ passed/i)).toBeVisible();
+  const box = await sheet.boundingBox();
+  const height = page.viewportSize()!.height;
+  expect(box!.y + box!.height, 'bottom of the test sheet').toBeLessThanOrEqual(height);
+});
