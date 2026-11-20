@@ -48,11 +48,13 @@ function headFor(route) {
 let pages = 0;
 for (const route of ALL_ROUTES) {
   const { title, tags } = headFor(route);
+  // Replacer functions, not strings: in a replacement string `$&`, `$'` and `` $` ``
+  // are patterns, and page text (a code sample with `${x}$`) would be spliced in wrong.
   let html = template
-    .replace(ROOT_TAG, `<div id="root">${render(route)}</div>`)
-    .replace(/<title>.*?<\/title>/s, `<title>${escapeAttr(title)}</title>`)
+    .replace(ROOT_TAG, () => `<div id="root">${render(route)}</div>`)
+    .replace(/<title>.*?<\/title>/s, () => `<title>${escapeAttr(title)}</title>`)
     .replace(/\s*<meta name="description"[^>]*>/, '')
-    .replace('</head>', `    ${tags.join('\n    ')}\n  </head>`);
+    .replace('</head>', () => `    ${tags.join('\n    ')}\n  </head>`);
   const path = pathFor(route);
   const file = path.endsWith('/') ? join(buildDir, path, 'index.html') : join(buildDir, path);
   await mkdir(dirname(file), { recursive: true });
