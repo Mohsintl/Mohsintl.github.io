@@ -6,7 +6,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, ArrowUpRight, Github, Linkedin, Mail, Menu, Search, X } from 'lucide-react';
 import { certifications, contributionGroups, contributions, experience, profile, projects, skills, type Contribution } from './data/profile';
-import { fieldNotes, prNotes, type Note } from './data/notes';
+import { fieldNotes, latestNotes, prNotes, type Note } from './data/notes';
 import { pathFor, RESOURCE_TABS, type ResourceTab, type Route } from './routes';
 import { CheatSheets } from './components/resources/CheatSheets';
 import { Templates } from './components/resources/Templates';
@@ -39,7 +39,7 @@ const TEST_RUN = [
   'resources › search narrows the cheat sheets',
   'profile › does not scroll sideways',
 ];
-const TEST_TOTAL = '142 passed';
+const TEST_TOTAL = '150 passed';
 
 const allItems = contributions.flatMap((c) => c.items);
 const landed = allItems.filter((i) => i.status !== 'in review').length;
@@ -62,12 +62,60 @@ const prNumber = (url: string) => url.match(/\/pull\/(\d+)/)?.[1];
 
 const backLink = 'inline-flex items-center gap-1.5 text-sm font-medium text-ink-2 underline decoration-rule hover:text-ink hover:decoration-ink';
 
+/** Notes as a list of links: title, summary, and the PR number on PR notes. */
+function NoteList({ list, heading }: { list: Note[]; heading: 'h2' | 'h3' }) {
+  const Title = heading;
+  return (
+    <ul className="divide-y divide-rule">
+      {list.map((n) => (
+        <li key={n.slug} className="rise">
+          <a href={pathFor({ page: 'note', note: n })} className="group grid gap-2 py-6 first:pt-2 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)_auto] md:items-baseline md:gap-10">
+            <Title className="text-xl font-bold leading-snug decoration-signal-deep decoration-[3px] group-hover:underline">
+              {n.pr && <span className="tabular mr-2 font-mono text-sm font-medium text-ink-3">#{n.pr.number}</span>}
+              {n.title}
+            </Title>
+            <p className="text-ink-2">{n.summary}</p>
+            <ArrowRight className="hidden h-5 w-5 text-ink-3 transition-transform group-hover:translate-x-1 group-hover:text-ink md:block" />
+          </a>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** Every note, field notes and PR notes, on its own page. */
+function NotesPage() {
+  return (
+    <main>
+      <div className="mx-auto max-w-6xl px-4 pb-24 pt-10">
+        <a href="/" className={backLink}>
+          <ArrowLeft className="h-4 w-4" /> back to profile
+        </a>
+        <h1 className="display mt-10 text-5xl uppercase sm:text-7xl">Notes</h1>
+        <p className="mt-4 max-w-2xl text-xl text-ink-2">Short write-ups of what I learned doing the work.</p>
+        {[
+          { title: 'Field notes', about: 'Things I worked out on my own projects.', list: fieldNotes },
+          { title: 'PR notes', about: 'One merged pull request each: the problem, what I did, what I learned.', list: prNotes },
+        ].map((group) => (
+          <section key={group.title} className="mt-16">
+            <div className="mb-2 flex flex-col gap-1 border-b-2 border-signal pb-3 sm:flex-row sm:items-baseline sm:justify-between">
+              <h2 className="display text-3xl uppercase text-signal">{group.title}</h2>
+              <p className="text-ink-3">{group.about}</p>
+            </div>
+            <NoteList list={group.list} heading="h3" />
+          </section>
+        ))}
+      </div>
+    </main>
+  );
+}
+
 /** One field note on its own page. */
 function NotePage({ note }: { note: Note }) {
   return (
     <main>
       <article className="mx-auto max-w-3xl px-4 pb-24 pt-10">
-        <a href="/#notes" className={backLink}>
+        <a href={pathFor({ page: 'notes' })} className={backLink}>
           <ArrowLeft className="h-4 w-4" /> all notes
         </a>
         <header className="mt-10 border-b-2 border-signal pb-8">
@@ -291,6 +339,8 @@ export default function App({ route }: { route: Route }) {
 
       {route.page === 'resources' ? (
         <ResourcesPage tab={route.tab} />
+      ) : route.page === 'notes' ? (
+        <NotesPage />
       ) : route.page === 'note' ? (
         <NotePage note={route.note} />
       ) : route.page === 'not-found' ? (
@@ -426,31 +476,10 @@ export default function App({ route }: { route: Route }) {
         {/* Notes: a reading list */}
         <section id="notes" className="mx-auto max-w-6xl scroll-mt-16 px-4 pt-24">
           <SectionTitle title="Notes" aside="Short write-ups of what I learned doing the work." />
-          {[
-            { title: 'Field notes', about: 'Things I worked out on my own projects.', list: fieldNotes },
-            { title: 'PR notes', about: 'One merged pull request each: the problem, what I did, what I learned.', list: prNotes },
-          ].map((group) => (
-            <div key={group.title} className="mt-12 first-of-type:mt-0">
-              <div className="mb-2 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
-                <h3 className="display text-2xl uppercase text-signal">{group.title}</h3>
-                <p className="text-ink-3">{group.about}</p>
-              </div>
-              <ul className="divide-y divide-rule">
-                {group.list.map((n) => (
-                  <li key={n.slug} className="rise">
-                    <a href={pathFor({ page: 'note', note: n })} className="group grid gap-2 py-6 first:pt-2 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)_auto] md:items-baseline md:gap-10">
-                      <h4 className="text-xl font-bold leading-snug decoration-signal-deep decoration-[3px] group-hover:underline">
-                        {n.pr && <span className="tabular mr-2 font-mono text-sm font-medium text-ink-3">#{n.pr.number}</span>}
-                        {n.title}
-                      </h4>
-                      <p className="text-ink-2">{n.summary}</p>
-                      <ArrowRight className="hidden h-5 w-5 text-ink-3 transition-transform group-hover:translate-x-1 group-hover:text-ink md:block" />
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <NoteList list={latestNotes} heading="h3" />
+          <a href={pathFor({ page: 'notes' })} className="mt-8 inline-flex items-center gap-2 rounded-sm border-2 border-ink/60 px-5 py-2.5 font-semibold transition-colors hover:border-signal hover:text-signal">
+            Read more notes <ArrowRight className="h-4 w-4" />
+          </a>
         </section>
 
         {/* Skills: a spec sheet */}

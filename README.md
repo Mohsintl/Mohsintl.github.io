@@ -26,7 +26,7 @@ The first `npm test` needs a browser: `npx playwright install chromium`.
 | What | Where |
 | :--- | :--- |
 | Name, role, about, projects, contributions, skills | `src/data/profile.ts` |
-| Notes (write-ups, each at `/notes/<slug>/`) | `src/data/notes.ts` |
+| Notes (write-ups: the three newest on the home page, all of them at `/notes/`, each at `/notes/<slug>/`) | `src/data/notes.ts` |
 | Cheat sheets | `src/data/resources/cheatSheets.tsx` |
 | Templates and boilerplates | `src/data/resources/templates.tsx` |
 | Test cases | `src/data/resources/testCases.ts` |

@@ -18,6 +18,7 @@ export type ResourceTab = (typeof RESOURCE_TABS)[number]['id'];
 export type Route =
   | { page: 'home' }
   | { page: 'resources'; tab: ResourceTab }
+  | { page: 'notes' }
   | { page: 'note'; note: Note }
   | { page: 'not-found' };
 
@@ -31,6 +32,8 @@ export function pathFor(route: Route): string {
       return '/';
     case 'resources':
       return route.tab === 'cheatsheets' ? '/resources/' : `/resources/${route.tab}/`;
+    case 'notes':
+      return '/notes/';
     case 'note':
       return `/notes/${route.note.slug}/`;
     case 'not-found':
@@ -47,6 +50,7 @@ export function routeFromPath(pathname: string): Route {
     const tab = RESOURCE_TABS.find((t) => t.id === (resources[1] ?? 'cheatsheets'));
     if (tab) return { page: 'resources', tab: tab.id };
   }
+  if (path === '/notes/') return { page: 'notes' };
   const note = path.match(/^\/notes\/([a-z0-9-]+)\/$/);
   const found = note && notes.find((n) => n.slug === note[1]);
   if (found) return { page: 'note', note: found };
@@ -69,6 +73,7 @@ export function pathForLegacyHash(hash: string): string | null {
 export const ALL_ROUTES: Route[] = [
   { page: 'home' },
   ...RESOURCE_TABS.map((t) => ({ page: 'resources' as const, tab: t.id })),
+  { page: 'notes' },
   ...notes.map((note) => ({ page: 'note' as const, note })),
   { page: 'not-found' },
 ];
@@ -86,6 +91,11 @@ export function pageMeta(route: Route): { title: string; description: string } {
       const tab = RESOURCE_TABS.find((t) => t.id === route.tab)!;
       return { title: `${tab.label} · QA resources · ${profile.name}`, description: tab.blurb };
     }
+    case 'notes':
+      return {
+        title: `Notes · ${profile.name}`,
+        description: 'Short write-ups of what I learned doing the work: field notes from my own projects, and one note per merged pull request.',
+      };
     case 'note':
       return { title: `${route.note.title} · ${profile.name}`, description: route.note.summary };
     case 'not-found':

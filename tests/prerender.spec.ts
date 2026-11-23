@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { contributions, experience, profile, projects } from '../src/data/profile';
-import { notes } from '../src/data/notes';
+import { latestNotes, notes } from '../src/data/notes';
 import { ALL_ROUTES, pageMeta, pathFor, RESOURCE_TABS, SITE_URL } from '../src/routes';
 
 // What a crawler, link-preview bot or AI tool sees: the HTML as served, with no JavaScript run.
@@ -37,9 +37,14 @@ test.describe('served HTML, before any JavaScript runs', () => {
 
   test('the home page carries the whole profile as text', async ({ request }) => {
     const text = textOf(await (await request.get('/')).text());
-    for (const expected of [profile.role, profile.tagline, profile.email, ...experience.flatMap((j) => j.roles.map((r) => r.title)), ...projects.map((p) => p.name), ...contributions.flatMap((c) => c.items.map((i) => i.label)), ...notes.map((n) => n.title)]) {
+    for (const expected of [profile.role, profile.tagline, profile.email, ...experience.flatMap((j) => j.roles.map((r) => r.title)), ...projects.map((p) => p.name), ...contributions.flatMap((c) => c.items.map((i) => i.label)), ...latestNotes.map((n) => n.title)]) {
       expect(text, expected).toContain(expected);
     }
+  });
+
+  test('the notes page lists every note as text', async ({ request }) => {
+    const text = textOf(await (await request.get(pathFor({ page: 'notes' }))).text());
+    for (const note of notes) expect(text, note.slug).toContain(note.title);
   });
 
   test('each note page carries its own text', async ({ request }) => {
