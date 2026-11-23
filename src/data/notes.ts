@@ -425,3 +425,6 @@ export const fieldNotes = notes.filter((note) => !note.pr);
 
 /** PR notes, newest first. */
 export const prNotes = notes.filter((note) => note.pr);
+
+/** The three newest notes of either kind, for the home page. */
+export const latestNotes = [...notes].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
